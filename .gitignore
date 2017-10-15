@@ -1,0 +1,9 @@
+daemon.txt
+*.swp
+todo.md
+
+hooks/
+platforms/
+plugins/
+plugins/
+plugins/
