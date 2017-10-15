@@ -38,6 +38,15 @@ Tile.prototype.createBackground = function() {
     sprite.y += sprite.height/2;
 };
 
+Tile.prototype.addEffect = function(effect) {
+    let sprite = this.backgroundContainer.create(0, 0, "effect:" + effect);
+    sprite.scale.setTo(GAME.config.scale);
+    sprite.anchor.set(0.5, 0.5);
+
+    sprite.x += sprite.width/2;
+    sprite.y += sprite.height/2;
+};
+
 Tile.prototype.createFow = function() {
     let sprite = this.fowContainer.create(0, 0, "tile:blank");
     sprite.tint = 0x2b2b2b;
@@ -109,6 +118,22 @@ Tile.prototype.addItem = function(itemID) {
     sprite.width = sprite.height = GAME.config.spriteSize * GAME.config.scale;
     sprite.anchor.set(0.5, 0.5);
 
+    sprite.isUsable = true;
+    sprite.effects = [];
+    sprite.effects.push({'type':'health', 'amount':3});
+
     sprite.x += sprite.width/2;
     sprite.y += sprite.height/2;
+}
+
+Tile.prototype.getItems = function() {
+    let items = [];
+
+    this.itemContainer.children.forEach(function(single_item) {
+        if (single_item.isUsable) {
+            items.push(single_item);
+        }
+    }, this);
+
+    return items;
 }

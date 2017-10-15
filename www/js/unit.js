@@ -11,6 +11,8 @@ function Unit(game) {
     sprite.animations.add('idle', [0, 1], 2, true);
     sprite.animations.play('idle');
 
+    this.health = 1;
+
     this.isReady = new Phaser.Signal();
     this.hasMoved = new Phaser.Signal();
 };
@@ -47,6 +49,10 @@ Unit.prototype.move = function(gridX, gridY) {
 Unit.prototype.isAlive = function() {
     return this.health > 0;
 }
+
+Unit.prototype.takeDamage = function(damage) {
+    this.health = Math.max(this.health-damage, 0);
+};
 
 Unit.prototype.damage = function(nbrDamage) {
     let startingHealth = this.health;

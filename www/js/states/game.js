@@ -12,6 +12,11 @@ GAME.Game.prototype = {
         this.mapContainer.addChild(this.map);
 
         this.mapContainer.x = (this.game.width - this.mapContainer.width) / 2;
+
+        this.unitHealth = this.game.add.bitmapText(0, 0, "font:gui", "X", 20);
+    },
+    update: function() {
+        this.unitHealth.text = this.map.unit.health;
     },
     showPopup: function(label) {
         this.popup = new Popup(this.game, label);

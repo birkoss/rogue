@@ -27,7 +27,7 @@ function Map(game, config) {
     this.unit = new Unit(this.game);
     this.unit.hasMoved.add(this.unitHaveMoved, this);
     this.unitContainer.addChild(this.unit);
-    this.reveal(0, 0);
+    this.reveal(0, 0, false);
     this.unit.setPosition(0, 0);
 
     //this.createFOW();
@@ -36,7 +36,7 @@ function Map(game, config) {
 
     this.onMovePlayer = new Phaser.Signal();
 
-    this.canMove = false;
+    this.canMove = true;
 };
 
 Map.prototype = Object.create(Phaser.Group.prototype);
@@ -76,33 +76,17 @@ Map.prototype.canMoveTo = function(x, y) {
     return (x >= 0 && x < this.gridWidth && y >= 0 && y < this.gridHeight);
 };
 
-Map.prototype.reveal = function(x, y, fading = false) {
+Map.prototype.reveal = function(x, y, moveUnit = true) {
     let index = (y * this.gridWidth) + x;
-    if (this.tilesContainer.getChildAt(index).isRevealed()) {
-        //this.executeTile();
+    if (this.tilesContainer.getChildAt(index).isRevealed() && moveUnit) {
         this.moveUnit();
     } else {
         this.tilesContainer.getChildAt(index).reveal();
-        this.tilesContainer.getChildAt(index).onReveal.add(function() {
-            //this.executeTile();
-            this.moveUnit();
-        }, this);
-       /*
-        if (!fading) {
-            for (let nx=-1; nx<=1; nx++) {
-                for (let ny=-1; ny<=1; ny++) {
-                    if (Math.abs(nx) != Math.abs(ny)) {
-                        let tx = nx + x;
-                        let ty = ny + y;
-                        if (this.canMoveTo(tx, ty)) {
-                            index = (ty * this.gridWidth) + tx;
-                            this.tilesContainer.getChildAt(index).reveal(true);
-                        }
-                    }
-                }
-            }
-        }  
-        */      
+        if (moveUnit) {
+            this.tilesContainer.getChildAt(index).onReveal.add(function() {
+                this.moveUnit();
+            }, this);
+        }
     }
 };
 
@@ -113,7 +97,29 @@ Map.prototype.moveUnit = function() {
 Map.prototype.executeTile = function() {
     this.canMove = true;
 
-    console.log (this.getTileAt(this.unit.gridX, this.unit.gridY));
+    let tile = this.getTileAt(this.unit.gridX, this.unit.gridY);
+    if (tile != null) {
+        let items = tile.getItems();
+        if (items.length > 0) {
+            items.forEach(single_item => {
+                single_item.frame = 1;
+                single_item.isUsable = false;
+                single_item.effects.forEach(single_effect => {
+                    this.applyEffect(single_effect);
+                });
+                console.log(this);
+                console.log(single_item);
+            });
+        }
+    }
+};
+
+Map.prototype.applyEffect = function(effect) {
+    switch (effect.type) {
+        case 'health':
+            this.unit.health += effect.amount;
+            break;
+    }
 };
 
 /* Helpers */
@@ -201,7 +207,18 @@ Map.prototype.moveEnd = function(map, pointer) {
 };
 
 Map.prototype.unitHaveMoved = function() {
-    //this.reveal(this.unit.gridX, this.unit.gridY);
+    this.unit.takeDamage(1);
 
-    this.executeTile();
+    if (this.unit.isAlive()) {
+        this.executeTile();
+    } else {
+        let tile = this.getTileAt(this.unit.gridX, this.unit.gridY);
+        tile.addEffect('blood');
+
+        let tween = this.game.add.tween(this.unit).to({alpha:0}, 200);
+        tween.onComplete.add(function() {
+            this.restartPlayer();
+        }, this);
+        tween.start();
+    }
 };
