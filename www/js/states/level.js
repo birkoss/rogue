@@ -200,10 +200,10 @@ GAME.Level.prototype.startTurn = function() {
         let unitTile = this.getUnitPosition(unit);
         let playerTile = this.getUnitPosition(this.unit);
 
-        if (unit.isActive()) {
-            let pf = new Pathfinding(this.getTiles(Unit.Type.Player), this.map.width, this.map.height);
-            let path = pf.find({x:unitTile.x, y:unitTile.y}, {x:playerTile.x, y:playerTile.y});
+        let pf = new Pathfinding(this.getTiles(Unit.Type.Player), this.map.width, this.map.height);
+        let path = pf.find({x:unitTile.x, y:unitTile.y}, {x:playerTile.x, y:playerTile.y});
 
+        if (unit.isActive()) {
             if (path.length > 1) {
                 this.moveUnit(unit, path[0].x, path[0].y);
             } else if (path.length == 1) {
@@ -213,9 +213,6 @@ GAME.Level.prototype.startTurn = function() {
             }
         } else {
             /* Check if we are near the player */
-            let pf = new Pathfinding(this.getTiles(Unit.Type.Player), this.map.width, this.map.height);
-            let path = pf.find({x:unitTile.x, y:unitTile.y}, {x:playerTile.x, y:playerTile.y});
-            console.log(path.length);
             if (path.length <= 4) {
                 /* @TODO: Show a red ! scalling back and forth on top of the enemy */
                 unit.target = this.unit;
