@@ -39,6 +39,10 @@ Unit.prototype.isAlive = function() {
     return this.health > 0;
 };
 
+Unit.prototype.setHealth = function(newHealth) {
+    this.health = this.maxHealth = newHealth;
+}
+
 /* Move a unit to a specified position: NXxNY */
 Unit.prototype.move = function(nx, ny) {
     nx += this.width/2;

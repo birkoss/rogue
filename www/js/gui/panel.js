@@ -34,20 +34,43 @@ Panel.prototype.createMinimap = function() {
 };
 
 Panel.prototype.createStats = function() {
-    let startY = (this.minimap.y * 2) + this.minimap.height;
+    let startY = (this.minimap.y) + this.minimap.height + 10;
 
-    let texts = ["Health: 20", "Hunger: 100"];
+    let texts = ["Health", "Hunger"];
+
+    this.stats = {};
 
     texts.forEach(single_text => {
         let label = this.game.add.bitmapText(0, startY, "font:gui", single_text, 10);
-        label.anchor.set(0.5, 1);
-        label.x = this.backgroundContainer.width/2;
         label.tint = 0xffffff;
+        label.x = (this.backgroundContainer.width - label.width)/2;
 
         this.addChild(label);
 
         startY += label.height + 4;
+
+        let sprite = this.backgroundContainer.create(0, startY, "tile:blank");
+        sprite.tint = 0x220000;
+        sprite.width = 100;
+        sprite.height = 10;
+        sprite.x = (this.backgroundContainer.width - sprite.width)/2;
+
+        let progress = this.backgroundContainer.create(0, startY, "tile:blank");
+        progress.tint = 0xff0000;
+        progress.width = 100;
+        progress.height = 10;
+        progress.x = (this.backgroundContainer.width - sprite.width)/2;
+
+        label = this.game.add.bitmapText(this.backgroundContainer.width/2, startY + progress.height, "font:gui", "20 / 100", 10);
+        label.anchor.set(0.5, 1);
+        label.tint = 0xffffff;
+
+        this.stats[single_text.toLowerCase()] = {'text':label, 'progress':progress};
+
+        startY += progress.height + 4;
     });
+
+    console.log(this.stats);
 };
 
 Panel.prototype.createInventory = function() {
@@ -75,7 +98,11 @@ Panel.prototype.createInventory = function() {
 };
 
 Panel.prototype.updateUnit = function(unit) {
+    this.stats['hunger']['text'].text = unit.hunger + ' / ' + unit.maxHunger;
+    this.stats['hunger']['progress'].width = Math.floor(unit.hunger / unit.maxHunger * 100);
 
+    this.stats['health']['text'].text = unit.health + ' / ' + unit.maxHealth;
+    this.stats['health']['progress'].width = Math.floor(unit.health / unit.maxHealth * 100);
 };
 
 Panel.prototype.onInventorySlotClicked = function(slot, pointer) {
