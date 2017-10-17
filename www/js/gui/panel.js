@@ -64,6 +64,7 @@ Panel.prototype.createStats = function() {
         label = this.game.add.bitmapText(this.backgroundContainer.width/2, startY + progress.height, "font:gui", "20 / 100", 10);
         label.anchor.set(0.5, 1);
         label.tint = 0xffffff;
+        this.backgroundContainer.addChild(label);
 
         this.stats[single_text.toLowerCase()] = {'text':label, 'progress':progress};
 
