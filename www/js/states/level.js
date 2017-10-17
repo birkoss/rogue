@@ -19,19 +19,15 @@ GAME.Level.prototype.update = function() {
 };
 
 GAME.Level.prototype.createMap = function() {
-    //  Create our map (the 16x16 is the tile size)
     this.map = this.game.add.tilemap('level:1', 48, 48);
 
-    //  'tiles' = cache image key, 24x24 = tile size
     this.map.addTilesetImage('world', 'tileset:world');
-    this.map.addTilesetImage('items', 'tileset:items');
-
 
     // Create layers
     this.layers = {};
     this.layers.floor = this.map.createLayer(0);
     this.layers.walls = this.map.createLayer(1);
-
+    
     this.layers.floor.resizeWorld();
 };
 

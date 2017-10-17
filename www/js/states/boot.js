@@ -3,7 +3,7 @@ var GAME = GAME || {};
 GAME.Boot = function() {};
 
 GAME.Boot.prototype.preload =  function() {
-    this.load.image('gui:preloader', 'images/gui/preloader.png');
+    this.load.image('gui:preloader', 'assets/images/preloader.png');
 }
 
 GAME.Boot.prototype.create = function() {
