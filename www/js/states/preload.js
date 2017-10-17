@@ -10,7 +10,7 @@ GAME.Preload.prototype.preload = function() {
     this.load.tilemap('level:1', 'assets/levels/level1.json', null, Phaser.Tilemap.TILED_JSON);
 
     this.load.image('tileset:world', 'assets/images/tilesets/world.png');
-    this.load.image('tileset:items', 'assets/images/tilesets/items.png');
+    this.load.spritesheet('tileset:items', 'assets/images/tilesets/items.png', 32, 32);
     this.load.spritesheet('tileset:units', 'assets/images/tilesets/units.png', 48, 48);
 
     this.load.image('helper:move', 'assets/images/helpers/move.png');
@@ -26,6 +26,7 @@ GAME.Preload.prototype.preload = function() {
     this.load.bitmapFont('font:gui', 'assets/fonts/gui.png', 'assets/fonts/gui.xml');
 
     this.load.json("data:units", "assets/data/units.json");
+    this.load.json("data:items", "assets/data/items.json");
 
     this.load.image('tile:blank', 'assets/images/blank.png');
 };
@@ -33,6 +34,7 @@ GAME.Preload.prototype.preload = function() {
 GAME.Preload.prototype.create = function() {
     GAME.json = {};
     GAME.json['units'] = this.cache.getJSON("data:units");
+    GAME.json['items'] = this.cache.getJSON("data:items");
 
     this.state.start("Level");
 };

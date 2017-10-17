@@ -106,6 +106,26 @@ Panel.prototype.updateUnit = function(unit) {
     this.stats['health']['progress'].width = Math.floor(unit.health / unit.maxHealth * 100);
 };
 
+Panel.prototype.addItem = function(item) {
+    let emptySlot = null;
+    this.inventory.forEach(single_slot => {
+        if (emptySlot == null && single_slot.item == null) {
+            emptySlot = single_slot;
+        }
+    });
+
+    if (emptySlot != null) {
+        this.addChild(item);
+        emptySlot.item = item;
+        item.x = emptySlot.x + emptySlot.width/2;
+        item.y = emptySlot.y + emptySlot.height/2;
+
+        return true;
+    }
+
+    return false;
+};
+
 Panel.prototype.onInventorySlotClicked = function(slot, pointer) {
     this.onInventorySlotSelected.dispatch(slot);
 };

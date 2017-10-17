@@ -7,6 +7,8 @@ GAME.Level.prototype.create = function() {
 
     this.createMap();
 
+    this.createItems();
+
     this.createUnits();
 
     this.effectsContainer = this.game.add.group();
@@ -44,7 +46,7 @@ GAME.Level.prototype.createUnits = function() {
 
     /* Create the player */
     this.unit = new Player(this.game);
-    let unitTile = this.map.getTile(4, 2);
+    let unitTile = this.map.getTile(4, 8);
     this.unit.x = unitTile.worldX + (this.unit.width/2);
     this.unit.y = unitTile.worldY + (this.unit.width/2);
     this.unit.hasMoved.add(this.unitHaveMoved, this);
@@ -72,6 +74,28 @@ GAME.Level.prototype.createUnits = function() {
     });
 };
 
+GAME.Level.prototype.createItems = function() {
+    this.itemsContainer = this.game.add.group();
+    this.items = [];
+
+    /* Create the enemies based on the 3rd layer */
+    let tiles = this.game.cache.getTilemapData('level:1').data.layers[2].data;
+
+    tiles.forEach((single_tile, index) => {
+        if (single_tile > 0) {
+            let y = Math.floor(index / this.map.width);
+            let x = index - (y * this.map.width);
+
+            let tile = this.map.getTile(x, y);
+            let item = new Item(this.game, "key");
+            item.x = tile.worldX + 24;
+            item.y = tile.worldY + 24;
+            this.itemsContainer.addChild(item);
+            this.items.push(item);
+        }
+    });
+};
+
 GAME.Level.prototype.createPanel = function() {
     this.panel = new Panel(this.game);
     this.panel.onInventorySlotSelected.add(this.onPanelInventorySlotClicked, this);
@@ -93,6 +117,10 @@ GAME.Level.prototype.showPopup = function(label) {
 
 GAME.Level.prototype.getUnitPosition = function(unit) {
     return this.map.getTileWorldXY(unit.x - (unit.width/2), unit.y - (unit.height/2));
+};
+
+GAME.Level.prototype.getItemPosition = function(item) {
+    return this.map.getTileWorldXY(item.x - (item.width/2), item.y - (item.height/2));
 };
 
 GAME.Level.prototype.moveUnit = function(unit, x, y) {
@@ -261,11 +289,18 @@ GAME.Level.prototype.onPanelMinimapClicked = function(minimap) {
 };
 
 GAME.Level.prototype.unitHaveMoved = function(unit) {
-    let unitTile = this.map.getTileWorldXY(unit.x, unit.y);
-    this.effectsContainer.children.forEach(single_effect => {
-        if (single_effect.x == unitTile.worldX && single_effect.y == unitTile.worldY) {
-            single_effect.destroy();
-        }
-    });
+    if (unit.type == Unit.Type.Player) {
+        let unitTile = this.getUnitPosition(unit);
+        this.itemsContainer.forEach(single_item => {
+            let itemTile = this.getUnitPosition(single_item);
+
+            if (unitTile.x == itemTile.x && unitTile.y == itemTile.y) {
+                this.panel.addItem(single_item);
+
+//                this.itemsContainer.removeChild(single_item);
+                //single_item.destroy();
+            }
+        });
+    }
     this.endTurn();
 };
