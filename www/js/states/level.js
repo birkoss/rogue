@@ -10,11 +10,16 @@ GAME.Level.prototype.create = function() {
     this.createUnits();
 
     this.effectsContainer = this.game.add.group();
+
+    this.createPanel();
 };
 
 GAME.Level.prototype.update = function() {
     if (this.currentUnit == null) {
         this.updateATB();
+    }
+    if (this.unit != null) {
+        this.panel.updateUnit(this.unit);
     }
 };
 
@@ -27,7 +32,7 @@ GAME.Level.prototype.createMap = function() {
     this.layers = {};
     this.layers.floor = this.map.createLayer(0);
     this.layers.walls = this.map.createLayer(1);
-    
+
     this.layers.floor.resizeWorld();
 };
 
@@ -39,7 +44,7 @@ GAME.Level.prototype.createUnits = function() {
 
     /* Create the player */
     this.unit = new Player(this.game);
-    let unitTile = this.map.getTile(2,2);
+    let unitTile = this.map.getTile(2, 2);
     this.unit.x = unitTile.worldX + (this.unit.width/2);
     this.unit.y = unitTile.worldY + (this.unit.width/2);
     this.unit.hasMoved.add(this.unitHaveMoved, this);
@@ -65,6 +70,14 @@ GAME.Level.prototype.createUnits = function() {
             this.units.push(enemy);
         }
     });
+};
+
+GAME.Level.prototype.createPanel = function() {
+    this.panel = new Panel(this.game);
+    this.panel.onInventorySlotSelected.add(this.onPanelInventorySlotClicked, this);
+    this.panel.onMinimapSelected.add(this.onPanelMinimapClicked, this);
+    this.panel.x = this.game.width - this.panel.width;
+    this.panel.fixedToCamera = true;
 };
 
 GAME.Level.prototype.showPopup = function(label) {
@@ -126,16 +139,6 @@ GAME.Level.prototype.attackUnit = function(attacker, defender) {
         sprite.animations.play('idle');
     }, this);
     tween.start();
-};
-
-GAME.Level.prototype.unitHaveMoved = function(unit) {
-    let unitTile = this.map.getTileWorldXY(unit.x, unit.y);
-    this.effectsContainer.children.forEach(single_effect => {
-        if (single_effect.x == unitTile.worldX && single_effect.y == unitTile.worldY) {
-            single_effect.destroy();
-        }
-    });
-    this.endTurn();
 };
 
 GAME.Level.prototype.getTiles = function(excludedType) {
@@ -245,4 +248,24 @@ GAME.Level.prototype.updateATB = function() {
     } else {
         this.startTurn();
     }
+};
+
+/* Events */
+
+GAME.Level.prototype.onPanelInventorySlotClicked = function(slot) {
+
+};
+
+GAME.Level.prototype.onPanelMinimapClicked = function(minimap) {
+
+};
+
+GAME.Level.prototype.unitHaveMoved = function(unit) {
+    let unitTile = this.map.getTileWorldXY(unit.x, unit.y);
+    this.effectsContainer.children.forEach(single_effect => {
+        if (single_effect.x == unitTile.worldX && single_effect.y == unitTile.worldY) {
+            single_effect.destroy();
+        }
+    });
+    this.endTurn();
 };
