@@ -26,6 +26,15 @@ Unit.Type = {
     Enemy: 2
 };
 
+Unit.Facing = {
+    Left: 1,
+    Right: -1
+};
+
+Unit.prototype.face = function(direction) {
+    this.sprite.scale.x = direction;
+};
+
 Unit.prototype.isAlive = function() {
     return this.health > 0;
 };
@@ -37,9 +46,9 @@ Unit.prototype.move = function(nx, ny) {
 
     /* Face in the right direction */
     if (this.x < nx) {
-        this.sprite.scale.x = -1;
+        this.face(Unit.Facing.Right);
     } else if (this.x > nx) {
-        this.sprite.scale.x = 1;
+        this.face(Unit.Facing.Left);
     }
 
     let tween = this.game.add.tween(this).to({x:nx, y:ny}, 300, Phaser.Easing.Quadratic.Out);

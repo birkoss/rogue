@@ -94,15 +94,12 @@ GAME.Level.prototype.attackUnit = function(attacker, defender) {
     let nx = attacker.x;
     let ny = attacker.y;
 
-    /*
-    // @TODO: Face the right direction
+    /* Face the defender */
     if (attacker.x < defender.x) {
-        attacker.scale.x = 1;
+        attacker.face(Unit.Facing.Right);
     } else if (attacker.x > defender.x) {
-        attacker.scale.x = -1;
+        attacker.face(Unit.Facing.Left);
     }
-    */
-
 
     this.unitsContainer.swap(attacker, this.unitsContainer.getChildAt(this.unitsContainer.children.length - 1));
 
@@ -145,11 +142,11 @@ GAME.Level.prototype.unitHaveMoved = function(unit) {
     this.endTurn();
 };
 
-GAME.Level.prototype.getTiles = function() {
+GAME.Level.prototype.getTiles = function(excludedType) {
     let tiles = this.game.cache.getTilemapData('level:1').data.layers[1].data.slice(0);
 
     this.units.forEach(single_unit => {
-        if (single_unit.type == Unit.Type.AI) {
+        if (excludedType == null || excludedType != single_unit.type) {
             let tile = this.map.getTileWorldXY(single_unit.x, single_unit.y);
             tiles[ (tile.y * this.map.width) + tile.x ] = 1;
         }
@@ -204,18 +201,19 @@ GAME.Level.prototype.startTurn = function() {
         let playerTile = this.getUnitPosition(this.unit);
 
         if (unit.isActive()) {
-            let pf = new Pathfinding(this.getTiles(), this.map.width, this.map.height);
-            this.path = pf.find({x:unitTile.x, y:unitTile.y}, {x:playerTile.x, y:playerTile.y});
-            if (this.path.length > 1) {
-                this.moveUnit(unit, this.path[0].x, this.path[0].y);
-            } else if (this.path.length == 1) {
+            let pf = new Pathfinding(this.getTiles(Unit.Type.Player), this.map.width, this.map.height);
+            let path = pf.find({x:unitTile.x, y:unitTile.y}, {x:playerTile.x, y:playerTile.y});
+
+            if (path.length > 1) {
+                this.moveUnit(unit, path[0].x, path[0].y);
+            } else if (path.length == 1) {
                 this.attackUnit(unit, this.unit);
             } else {
                 this.endTurn();
             }
         } else {
             /* Check if we are near the player */
-            let pf = new Pathfinding(this.getTiles(), this.map.width, this.map.height);
+            let pf = new Pathfinding(this.getTiles(Unit.Type.Player), this.map.width, this.map.height);
             let path = pf.find({x:unitTile.x, y:unitTile.y}, {x:playerTile.x, y:playerTile.y});
             console.log(path.length);
             if (path.length <= 4) {
