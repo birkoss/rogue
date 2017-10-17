@@ -3,7 +3,8 @@ function Map(game, config) {
 
     this.gridWidth = Math.ceil(this.game.width/(GAME.config.spriteSize*GAME.config.scale));
     this.gridHeight = Math.ceil(this.game.height/(GAME.config.spriteSize*GAME.config.scale));
-    this.gridWidth = this.gridHeight = 6;
+    this.gridWidth = 6;
+    this.gridHeight = 8;
 
     this.tiles = [];
 
@@ -18,8 +19,6 @@ function Map(game, config) {
     this.addChild(this.unitContainer);
 
 
-
-
     this.createMap();
 
     this.createBackground();
@@ -27,20 +26,27 @@ function Map(game, config) {
     this.unit = new Unit(this.game);
     this.unit.hasMoved.add(this.unitHaveMoved, this);
     this.unitContainer.addChild(this.unit);
-    this.reveal(0, 0, false);
-    this.unit.setPosition(0, 0);
-
-    //this.createFOW();
+    this.unit.alpha = 0;
+    this.restartUnit();
 
     this.tilesContainer.x = this.tilesContainer.y = this.padding;
 
     this.onMovePlayer = new Phaser.Signal();
 
-    this.canMove = true;
+    this.needPopup = new Phaser.Signal();
+    this.isMoving = false;
+
+
 };
 
 Map.prototype = Object.create(Phaser.Group.prototype);
 Map.prototype.constructor = Map;
+
+Map.prototype.update = function() {
+    if (this.nextDestination != null) {
+        this.showPath();
+    }
+}
 
 Map.prototype.createBackground = function() {
     let background = this.backgroundContainer.create(0, 0, "tile:blank");
@@ -55,7 +61,6 @@ Map.prototype.createBackground = function() {
 
 Map.prototype.createMap = function() {
     for (let gridY=0; gridY<this.gridHeight; gridY++) {
-        let rows = [];
         for (let gridX=0; gridX<this.gridWidth; gridX++) {
             let tile = new Tile(this.game);
             this.tilesContainer.addChild(tile);
@@ -69,6 +74,8 @@ Map.prototype.createMap = function() {
     }
 
     this.tilesContainer.getChildAt(2).addItem('potion');
+
+    this.tilesContainer.getChildAt(6).addItem('stair');
 };
 
 
@@ -76,22 +83,20 @@ Map.prototype.canMoveTo = function(x, y) {
     return (x >= 0 && x < this.gridWidth && y >= 0 && y < this.gridHeight);
 };
 
-Map.prototype.reveal = function(x, y, moveUnit = true) {
-    let index = (y * this.gridWidth) + x;
-    if (this.tilesContainer.getChildAt(index).isRevealed() && moveUnit) {
-        this.moveUnit();
-    } else {
-        this.tilesContainer.getChildAt(index).reveal();
-        if (moveUnit) {
-            this.tilesContainer.getChildAt(index).onReveal.add(function() {
-                this.moveUnit();
-            }, this);
-        }
-    }
-};
-
 Map.prototype.moveUnit = function() {
-    this.unit.move(this.unit.gridX, this.unit.gridY);
+    console.log('moveUnit');
+    if (this.path.length == 0) {
+        this.clearPath();
+        this.isMoving = false;
+    } else {
+        this.isMoving = true;
+        let tile = this.path.shift();
+        console.log(tile);
+        this.unit.gridX = tile.x;
+        this.unit.gridY = tile.y;
+        this.unit.move(tile.gridX, tile.gridY);
+    }
+    //this.unit.move(this.unit.gridX, this.unit.gridY);
 }
 
 Map.prototype.executeTile = function() {
@@ -115,9 +120,14 @@ Map.prototype.executeTile = function() {
 };
 
 Map.prototype.applyEffect = function(effect) {
+    console.log("applyEffect:", effect);
     switch (effect.type) {
         case 'health':
             this.unit.health += effect.amount;
+            break;
+        case 'stair':
+            effect.isUsable = true;
+            this.needPopup.dispatch("Sway!!!");
             break;
     }
 };
@@ -166,13 +176,65 @@ Map.prototype.moveStart = function(map, pointer) {
     if (!this.canMove) {
         return;
     }
-    this.startPosition = {'x':pointer.x, 'y':pointer.y};
+    console.log(pointer);
+    //this.startPosition = {'x':pointer.x, 'y':pointer.y};
+    this.nextDestination = {x:-1, y:-1};
+
+    pointer.x -= this.parent.x;
+    pointer.y -= this.parent.y;
+
+console.log(this.game.input.x + "x" + this.game.input.y);
+
+   
+
 };
+
+Map.prototype.showPath = function() {
+    let nx = Math.floor((this.game.input.x - this.parent.x) / 48);
+    let ny = Math.floor((this.game.input.y - this.parent.y) / 48);
+
+    if (this.nextDestination.x != nx || this.nextDestination.y != ny) {
+        this.nextDestination.x = nx;
+        this.nextDestination.y = ny;
+
+        let tiles = [];
+
+        for (let gridY=0; gridY<this.gridHeight; gridY++) {
+            let rows = [];
+            for (let gridX=0; gridX<this.gridWidth; gridX++) {
+                let value = 0;
+
+                if (gridX ==0 && gridY == 1) {
+                    value = 1;
+                }
+                rows.push(value);
+            }
+            tiles.push(rows);
+        }
+
+        this.clearPath();
+
+        var pf = new Pathfinding(tiles, this.gridWidth, this.gridHeight);
+
+        this.path = pf.find({x:this.unit.gridX, y:this.unit.gridY}, {x:nx, y:ny});
+
+        this.path.forEach(single_path => {
+            let tile = this.getTileAt(single_path.x, single_path.y);
+            tile.alpha = 0.5;
+        });
+    }
+}
 
 Map.prototype.moveEnd = function(map, pointer) {
     if (!this.canMove) {
         return;
     }
+    
+    if (this.path.length > 0 && !this.isMoving) {
+        this.moveUnit();
+    }
+    this.nextDestination = null;
+    return ;
 
     let treshold = 10;
 
@@ -196,9 +258,9 @@ Map.prototype.moveEnd = function(map, pointer) {
                 this.canMove = false;
                 this.unit.gridX = nx;
                 this.unit.gridY = ny;
-                //this.unit.move(nx, ny);
+                this.unit.move(nx, ny);
                 console.log(nx + "x" + ny);
-                this.reveal(nx, ny);
+                //this.reveal(nx, ny);
             }
         }
 
@@ -207,6 +269,8 @@ Map.prototype.moveEnd = function(map, pointer) {
 };
 
 Map.prototype.unitHaveMoved = function() {
+    this.moveUnit();
+    return;
     this.unit.takeDamage(1);
 
     if (this.unit.isAlive()) {
@@ -217,8 +281,25 @@ Map.prototype.unitHaveMoved = function() {
 
         let tween = this.game.add.tween(this.unit).to({alpha:0}, 200);
         tween.onComplete.add(function() {
-            this.restartPlayer();
+            this.restartUnit();
         }, this);
         tween.start();
     }
 };
+
+Map.prototype.restartUnit = function() {
+    this.unit.setPosition(0, 0);
+    this.unit.health = 5;
+
+    let tween = this.game.add.tween(this.unit).to({alpha:1}, 200);
+    tween.onComplete.add(function() {
+        this.canMove = true;
+    }, this);
+    tween.start();
+};
+
+Map.prototype.clearPath = function() {
+    this.tilesContainer.children.forEach(single_tile => {
+        single_tile.alpha = 1;
+    });
+}

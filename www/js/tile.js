@@ -7,14 +7,7 @@ function Tile(game) {
     this.itemContainer = this.game.add.group();
     this.addChild(this.itemContainer);
 
-    this.fowContainer = this.game.add.group();
-    this.addChild(this.fowContainer);
-
     this.createBackground();
-
-    this.createFow();
-
-    this.onReveal = new Phaser.Signal();
 };
 
 Tile.prototype = Object.create(Phaser.Group.prototype);
@@ -30,7 +23,7 @@ Tile.prototype.setFrame = function(newFrame) {
 }
 
 Tile.prototype.createBackground = function() {
-    let sprite = this.backgroundContainer.create(0, 0, "tile:grass");
+    let sprite = this.backgroundContainer.create(0, 0, "tile:dungeon");
     sprite.scale.setTo(GAME.config.scale);
     sprite.anchor.set(0.5, 0.5);
 
@@ -46,40 +39,6 @@ Tile.prototype.addEffect = function(effect) {
     sprite.x += sprite.width/2;
     sprite.y += sprite.height/2;
 };
-
-Tile.prototype.createFow = function() {
-    let sprite = this.fowContainer.create(0, 0, "tile:blank");
-    sprite.tint = 0x2b2b2b;
-    sprite.width = sprite.height = GAME.config.spriteSize * GAME.config.scale;
-    sprite.anchor.set(0.5, 0.5);
-
-    sprite.x += sprite.width/2;
-    sprite.y += sprite.height/2;
-};
-
-Tile.prototype.reveal = function(fading = false) {
-    //let tween = this.game.add.tween(this.fowContainer.getChildAt(0)).to({alpha:0}, 500);
-    //tween.start();
-    if (!this.isRevealed()) {
-        let sprite = this.fowContainer.getChildAt(0);
-        if (fading) {
-            if (sprite.alpha == 1) {
-                this.game.add.tween(this.fowContainer.getChildAt(0)).to({alpha:0.5}, 500).start();
-            }
-        } else {
-            let tween = this.game.add.tween(this.fowContainer.getChildAt(0)).to({alpha:0}, 150);
-            tween.onComplete.add(function() {
-                this.onReveal.dispatch(this);
-                this.fowContainer.removeAll(true);
-            }, this);
-            tween.start();
-        }
-    }
-}
-
-Tile.prototype.isRevealed = function() {
-    return (this.fowContainer.children.length == 0);
-}
 
 Tile.prototype.addSprite = function(spriteName) {
     console.log(spriteName);
@@ -120,7 +79,15 @@ Tile.prototype.addItem = function(itemID) {
 
     sprite.isUsable = true;
     sprite.effects = [];
-    sprite.effects.push({'type':'health', 'amount':3});
+
+    switch (itemID) {
+        case "potion":
+            sprite.effects.push({'type':'health', 'amount':3});
+            break;
+        case "stair":
+            sprite.effects.push({'type':'stair'});
+            break;
+    }
 
     sprite.x += sprite.width/2;
     sprite.y += sprite.height/2;

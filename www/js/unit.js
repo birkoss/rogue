@@ -1,24 +1,32 @@
-function Unit(game) {
+function Unit(game, type) {
     Phaser.Group.call(this, game);
+
+    this.type = type;
 
     this.spriteContainer = this.game.add.group();
     this.addChild(this.spriteContainer);
 
-    let sprite = this.spriteContainer.create(0, 0, 'unit:skeleton');
-    sprite.scale.setTo(GAME.config.scale);
-    sprite.anchor.set(0.5, 0.5);
+    let spriteName = (this.type === Unit.Type.AI ? 'skeleton' : 'knight');
+    this.sprite = this.spriteContainer.create(0, 0, 'unit:' + spriteName);
+    this.sprite.anchor.set(0.5, 0.5);
 
-    sprite.animations.add('idle', [0, 1], 2, true);
-    sprite.animations.play('idle');
+    this.sprite.animations.add('idle', [0, 1], 2, true);
+    this.sprite.animations.play('idle');
 
-    this.health = 1;
+    this.health = 2;
 
     this.isReady = new Phaser.Signal();
     this.hasMoved = new Phaser.Signal();
 };
 
+
 Unit.prototype = Object.create(Phaser.Group.prototype);
 Unit.prototype.constructor = Unit;
+
+Unit.Type = {
+    Player: 1,
+    AI: 2
+};
 
 Unit.prototype.setPosition = function(newX, newY) {
     this.x = newX + 24;
@@ -28,18 +36,18 @@ Unit.prototype.setPosition = function(newX, newY) {
     this.gridY = newY;
 }
 
-Unit.prototype.move = function(gridX, gridY) {
-    let nx = (this.gridX * 48) + 24;
-    let ny = (this.gridY * 48) + 24;
+Unit.prototype.move = function(nx, ny) {
+    nx += this.width/2;
+    ny += this.height/2;
 
     /* Face in the right direction */
     if (this.x < nx) {
-        this.scale.x = -1;
+        this.sprite.scale.x = -1;
     } else if (this.x > nx) {
-        this.scale.x = 1;
+        this.sprite.scale.x = 1;
     }
 
-    let tween = this.game.add.tween(this).to({x:nx, y:ny}, 100);
+    let tween = this.game.add.tween(this).to({x:nx, y:ny}, 300, Phaser.Easing.Quadratic.Out);
     tween.onComplete.add(function() {
         this.hasMoved.dispatch(this);
     }, this);
@@ -52,6 +60,11 @@ Unit.prototype.isAlive = function() {
 
 Unit.prototype.takeDamage = function(damage) {
     this.health = Math.max(this.health-damage, 0);
+    if (!this.isAlive()) {
+        this.spriteContainer.removeAll(true);
+        let sprite = this.spriteContainer.create(0, 0, 'effect:blood');
+        sprite.anchor.set(0.5, 0.5);
+    }
 };
 
 Unit.prototype.damage = function(nbrDamage) {
