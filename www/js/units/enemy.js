@@ -1,7 +1,6 @@
 function Enemy(game) {
-	Unit.call(this, game, Unit.Type.Enemy, 'skeleton');
+	Unit.call(this, game, Unit.Type.Enemy, 'rat');
 
-    this.setHealth(2);
     this.fillRateATB = 25;
 
     this.target = null;

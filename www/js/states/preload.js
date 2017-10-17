@@ -11,6 +11,7 @@ GAME.Preload.prototype.preload = function() {
 
     this.load.image('tileset:world', 'assets/images/tilesets/world.png');
     this.load.image('tileset:items', 'assets/images/tilesets/items.png');
+    this.load.spritesheet('tileset:units', 'assets/images/tilesets/units.png', 48, 48);
 
     this.load.image('helper:move', 'assets/images/helpers/move.png');
     this.load.image('helper:attack', 'assets/images/helpers/attack.png');
@@ -24,10 +25,14 @@ GAME.Preload.prototype.preload = function() {
     this.load.bitmapFont('font:guiOutline', 'assets/fonts/guiOutline.png', 'assets/fonts/guiOutline.xml');
     this.load.bitmapFont('font:gui', 'assets/fonts/gui.png', 'assets/fonts/gui.xml');
 
-    /* @TODO: Cleanup required... */
+    this.load.json("data:units", "assets/data/units.json");
+
     this.load.image('tile:blank', 'assets/images/blank.png');
 };
 
 GAME.Preload.prototype.create = function() {
+    GAME.json = {};
+    GAME.json['units'] = this.cache.getJSON("data:units");
+
     this.state.start("Level");
 };

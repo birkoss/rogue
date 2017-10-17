@@ -1,0 +1,10 @@
+{
+	"knight": {
+		"frames": [0, 18],
+		"health": 20
+	},
+	"rat": {
+		"frames": [223, 241],
+		"health": 2
+	}
+}

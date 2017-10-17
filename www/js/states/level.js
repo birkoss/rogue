@@ -44,7 +44,7 @@ GAME.Level.prototype.createUnits = function() {
 
     /* Create the player */
     this.unit = new Player(this.game);
-    let unitTile = this.map.getTile(3, 2);
+    let unitTile = this.map.getTile(4, 2);
     this.unit.x = unitTile.worldX + (this.unit.width/2);
     this.unit.y = unitTile.worldY + (this.unit.width/2);
     this.unit.hasMoved.add(this.unitHaveMoved, this);

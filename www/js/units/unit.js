@@ -1,16 +1,19 @@
-function Unit(game, type, spriteName) {
+function Unit(game, type, unitID) {
 
     Phaser.Group.call(this, game);
 
     this.type = type;
 
+    this.data = GAME.json['units'][unitID];
+    this.setHealth(this.data.health);
+
     this.spriteContainer = this.game.add.group();
     this.addChild(this.spriteContainer);
 
-    this.sprite = this.spriteContainer.create(0, 0, 'unit:' + spriteName);
+    this.sprite = this.spriteContainer.create(0, 0, 'tileset:units');
     this.sprite.anchor.set(0.5, 0.5);
 
-    this.sprite.animations.add('idle', [0, 1], 2, true);
+    this.sprite.animations.add('idle', this.data.frames, 2, true);
     this.sprite.animations.play('idle');
 
     this.hasMoved = new Phaser.Signal();
