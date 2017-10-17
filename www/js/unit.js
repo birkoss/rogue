@@ -15,8 +15,9 @@ function Unit(game, type) {
 
     this.health = 2;
 
-    this.isReady = new Phaser.Signal();
     this.hasMoved = new Phaser.Signal();
+
+    this.clearATB();
 };
 
 
@@ -82,7 +83,6 @@ Unit.prototype.damage = function(nbrDamage) {
 
     animation.onComplete.add(function(animation) {
         animation.destroy();
-        this.isReady.dispatch(this);
     }, this);
 }
 
@@ -103,3 +103,23 @@ Unit.prototype.updateHealth = function(from, to) {
         tween.start();
     }
 }
+
+Unit.prototype.clearATB = function() {
+    this.ATB = 0;
+};
+
+Unit.prototype.getMaxATB = function() {
+    return 100;
+};
+
+Unit.prototype.getFillRateATB = function() {
+    return 1;
+};
+
+Unit.prototype.isReady = function() {
+    return (this.ATB >= this.getMaxATB());
+};
+
+Unit.prototype.updateATB = function() {
+    this.ATB = Math.min(this.ATB + this.getFillRateATB(), this.getMaxATB());
+};

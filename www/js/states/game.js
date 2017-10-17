@@ -5,7 +5,7 @@ GAME.Game = function() {};
 GAME.Game.prototype = {
     create: function() {
         this.waitingForPlayerAction = false;
-        this.currentUnit = 0;
+        this.currentUnit = null;
 
         this.game.input.onDown.add(this.onMouseDown, this);
         this.game.input.onUp.add(this.onMouseUp, this);
@@ -77,10 +77,11 @@ GAME.Game.prototype = {
 
         this.effectsContainer = this.game.add.group();
 
-        this.startTurn();
-
     },
     update: function() {
+        if (this.currentUnit == null) {
+            this.updateATB();
+        }
         //this.unitHealth.text = this.map.unit.health;
         /*
         this.physics.arcade.collide(this.unit, this.layers.walls);
@@ -93,9 +94,13 @@ GAME.Game.prototype = {
 
             */
 
+/*
             if (this.waitingForPlayerAction && this.nextDestination != null) {
                 this.showPath();
             }
+*/
+
+
 
     },
     showPopup: function(label) {
@@ -220,7 +225,8 @@ GAME.Game.prototype = {
         return tiles;
     },
     startTurn: function() {
-        let unit = this.units[this.currentUnit];
+        let unit = this.currentUnit;
+        console.log(unit);
         if (unit.type == Unit.Type.Player) {
             //this.waitingForPlayerAction = true;
             let tiles = this.getTiles();
@@ -276,6 +282,9 @@ GAME.Game.prototype = {
         }
     },
     endTurn: function() {
+        this.currentUnit.clearATB();
+        this.currentUnit = null;
+        /*
         this.currentUnit++;
         if (this.currentUnit >= this.units.length) {
             this.currentUnit = 0;
@@ -284,5 +293,30 @@ GAME.Game.prototype = {
         console.log("END TURN: " + this.currentUnit);
 
         this.startTurn();
+        */
+    },
+    updateATB: function() {
+        this.currentUnit = null;
+
+        /* Check for units ready to action */
+        this.units.forEach(function(single_unit) {
+            if (this.currentUnit == null && single_unit.isReady()) {
+                console.log("Oh oui");
+                this.currentUnit = single_unit;
+            }
+        }, this);
+
+        /* Update the ATB if no units are ready */
+        if (this.currentUnit == null) {
+            console.log('Updating');
+            this.units.forEach(function(single_unit) {
+                if (single_unit.isAlive()) {
+                    single_unit.updateATB();
+                }
+            }, this);
+        } else {
+            this.startTurn();
+        }
     }
+
 };
