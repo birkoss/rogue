@@ -18,7 +18,6 @@ function Unit(game, type, spriteName) {
     this.clearATB();
 };
 
-
 Unit.prototype = Object.create(Phaser.Group.prototype);
 Unit.prototype.constructor = Unit;
 

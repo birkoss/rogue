@@ -4,16 +4,20 @@ GAME.Game = function() {};
 
 GAME.Game.prototype = {
     create: function() {
-        this.waitingForPlayerAction = false;
-        this.currentUnit = null;
-
-        this.game.input.onDown.add(this.onMouseDown, this);
-        this.game.input.onUp.add(this.onMouseUp, this);
-
         this.game.stage.backgroundColor = 0x262626;
 
+        this.createMap();
 
+        this.createUnits();
 
+        this.effectsContainer = this.game.add.group();
+    },
+    update: function() {
+        if (this.currentUnit == null) {
+            this.updateATB();
+        }
+    },
+    createMap: function() {
         //  Create our map (the 16x16 is the tile size)
         this.map = this.game.add.tilemap('level:1', 48, 48);
 
@@ -22,43 +26,30 @@ GAME.Game.prototype = {
         this.map.addTilesetImage('items', 'tileset:items');
 
 
+        // Create layers
         this.layers = {};
+        this.layers.floor = this.map.createLayer(0);
+        this.layers.walls = this.map.createLayer(1);
 
-        this.layers.floor = this.map.createLayer(0);//, this.game.width-100, this.game.height);
-        this.layers.walls = this.map.createLayer(1);//, this.game.width-100, this.game.height);
-
-/*
-        this.mapContainer = this.game.add.group();
-        this.mapContainer.addChild(this.layers.floor);
-        this.mapContainer.addChild(this.layers.walls);
-        this.mapContainer.x += 200;
-        */
-
-        //  Scroll it
         this.layers.floor.resizeWorld();
-        //this.layers.floor.resize(this.game.width-100, this.game.height);
-        //this.layers.walls.resize(this.game.width-100, this.game.height);
-
+    },
+    createUnits: function() {
         this.unitsContainer = this.game.add.group();
-
         this.units = [];
+        this.currentUnit = null;
 
-        this.unit = new Player(this.game);//this.game.add.sprite(160, 90, 'unit:skeleton');
-
-
+        /* Create the player */
+        this.unit = new Player(this.game);
         let unitTile = this.map.getTile(2,2);
-        this.unit.x = unitTile.worldX;
-        this.unit.y = unitTile.worldY;
+        this.unit.x = unitTile.worldX + (this.unit.width/2);
+        this.unit.y = unitTile.worldY + (this.unit.width/2);
         this.unit.hasMoved.add(this.unitHaveMoved, this);
         this.game.camera.follow(this.unit);
-        let tile = this.map.getTileWorldXY(this.unit.x, this.unit.y);
-        this.unit.x = tile.worldX + (this.unit.width/2);
-        this.unit.y = tile.worldY + (this.unit.height/2);
+
         this.unitsContainer.addChild(this.unit);
         this.units.push(this.unit);
 
-        this.layers.floor.resizeWorld();
-
+        /* Create the enemies based on the 3rd layer */
         let tiles = this.game.cache.getTilemapData('level:1').data.layers[3].data;
 
         tiles.forEach((single_tile, index) => {
@@ -71,41 +62,10 @@ GAME.Game.prototype = {
                 enemy.hasMoved.add(this.unitHaveMoved, this);
                 enemy.x = tile.worldX + (enemy.width/2);
                 enemy.y = tile.worldY + (enemy.height/2);
-                console.log(enemy.fillRateATB);
                 this.unitsContainer.addChild(enemy);
                 this.units.push(enemy);
             }
         });
-
-        console.log(this.unit.fillRateATB);
-
-        this.effectsContainer = this.game.add.group();
-
-    },
-    update: function() {
-        if (this.currentUnit == null) {
-            this.updateATB();
-        }
-        //this.unitHealth.text = this.map.unit.health;
-        /*
-        this.physics.arcade.collide(this.unit, this.layers.walls);
-
-            this.unit.body.velocity.x = 0;
-            if (this.leftKey.isDown) {
-                this.unit.body.velocity.x += 100;
-                console.log("OUI");
-            }
-
-            */
-
-/*
-            if (this.waitingForPlayerAction && this.nextDestination != null) {
-                this.showPath();
-            }
-*/
-
-
-
     },
     showPopup: function(label) {
         this.popup = new Popup(this.game, label);
@@ -116,44 +76,6 @@ GAME.Game.prototype = {
         this.popupContainer.y = -this.game.height;
         let tween = this.game.add.tween(this.popupContainer).to({y:this.popupContainer.originalY}, 1000, Phaser.Easing.Elastic.Out);
         tween.start();
-    },
-    onMapNeedPopup: function(label) {
-        this.showPopup(label);
-    },
-    onMouseDown: function(pointer) {
-        if (this.waitingForPlayerAction) {
-            this.nextDestination = {x:-1, y:-1};
-        }        
-    },
-    onMouseUp: function(pointer) {
-        if (this.waitingForPlayerAction) {
-            this.nextDestination = null;
-            if (this.path.length > 0 && !this.isMoving) {
-                this.waitingForPlayerAction = false;
-                this.moveUnit(this.unit, this.path[0].x, this.path[0].y);
-            }
-        }
-    },
-    showPath: function() {
-        let tile = this.map.getTileWorldXY(this.game.input.worldX, this.game.input.worldY);
-
-        if (this.nextDestination.x != tile.x || this.nextDestination.y != tile.y) {
-            this.nextDestination.x = tile.x;
-            this.nextDestination.y = tile.y;
-
-            var pf = new Pathfinding(this.getTiles(), this.map.width, this.map.height);
-
-            let unitTile = this.getUnitPosition(this.unit);
-
-            this.path = pf.find({x:unitTile.x, y:unitTile.y}, {x:tile.x, y:tile.y});
-
-            this.effectsContainer.removeAll(true);
-            this.path.forEach(singlePath => {
-                let tile = this.map.getTile(singlePath.x, singlePath.y, this.layers.floor);
-                this.effectsContainer.create(tile.worldX, tile.worldY, 'path');
-            });
-        }
-        
     },
     getUnitPosition: function(unit) {
         return this.map.getTileWorldXY(unit.x - (unit.width/2), unit.y - (unit.height/2));
@@ -167,6 +89,7 @@ GAME.Game.prototype = {
         let ny = attacker.y;
 
         /*
+        // @TODO: Face the right direction
         if (attacker.x < defender.x) {
             attacker.scale.x = 1;
         } else if (attacker.x > defender.x) {
@@ -230,7 +153,6 @@ GAME.Game.prototype = {
         let unit = this.currentUnit;
 
         if (unit.type == Unit.Type.Player) {
-            //this.waitingForPlayerAction = true;
             let tiles = this.getTiles();
             let unitTile = this.map.getTileWorldXY(this.unit.x, this.unit.y);
 
@@ -267,35 +189,39 @@ GAME.Game.prototype = {
                     }
                 }
             }
-        } else {
-            let pf = new Pathfinding(this.getTiles(), this.map.width, this.map.height);
+        } else if (unit.type == Unit.Type.Enemy) {
 
             let unitTile = this.getUnitPosition(unit);
             let playerTile = this.getUnitPosition(this.unit);
 
-            this.path = pf.find({x:unitTile.x, y:unitTile.y}, {x:playerTile.x, y:playerTile.y});
-            if (this.path.length > 1) {
-                this.moveUnit(unit, this.path[0].x, this.path[0].y);
-            } else if (this.path.length == 1) {
-                this.attackUnit(unit, this.unit);
+            if (unit.isActive()) {
+                let pf = new Pathfinding(this.getTiles(), this.map.width, this.map.height);
+                this.path = pf.find({x:unitTile.x, y:unitTile.y}, {x:playerTile.x, y:playerTile.y});
+                if (this.path.length > 1) {
+                    this.moveUnit(unit, this.path[0].x, this.path[0].y);
+                } else if (this.path.length == 1) {
+                    this.attackUnit(unit, this.unit);
+                } else {
+                    this.endTurn();
+                }
             } else {
-                this.endTurn();
+                /* Check if we are near the player */
+                let pf = new Pathfinding(this.getTiles(), this.map.width, this.map.height);
+                let path = pf.find({x:unitTile.x, y:unitTile.y}, {x:playerTile.x, y:playerTile.y});
+                console.log(path.length);
+                if (path.length <= 4) {
+                    /* @TODO: Show a red ! scalling back and forth on top of the enemy */
+                    unit.target = this.unit;
+                    this.endTurn();
+                } else {
+                    this.endTurn();
+                }
             }
         }
     },
     endTurn: function() {
         this.currentUnit.clearATB();
         this.currentUnit = null;
-        /*
-        this.currentUnit++;
-        if (this.currentUnit >= this.units.length) {
-            this.currentUnit = 0;
-        }
-
-        console.log("END TURN: " + this.currentUnit);
-
-        this.startTurn();
-        */
     },
     updateATB: function() {
         this.currentUnit = null;

@@ -8,7 +8,6 @@ function Pathfinding(map, width, height) {
 }
 
 Pathfinding.prototype.find = function(start, end) {
-    console.log(start, end);
     if (start.x == end.x && start.y == end.y) {
         return new Array();
     }
