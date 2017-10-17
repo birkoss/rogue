@@ -43,8 +43,9 @@ GAME.Game.prototype = {
 
         this.units = [];
 
-        this.unit = new Unit(this.game, Unit.Type.Player);//this.game.add.sprite(160, 90, 'unit:skeleton');
-        this.unit.health = 20;
+        this.unit = new Player(this.game);//this.game.add.sprite(160, 90, 'unit:skeleton');
+
+
         let unitTile = this.map.getTile(2,2);
         this.unit.x = unitTile.worldX;
         this.unit.y = unitTile.worldY;
@@ -66,14 +67,17 @@ GAME.Game.prototype = {
                 let x = index - (y * this.map.width);
 
                 let tile = this.map.getTile(x, y);
-                let enemy = new Unit(this.game, Unit.Type.AI);
+                let enemy = new Enemy(this.game);
                 enemy.hasMoved.add(this.unitHaveMoved, this);
                 enemy.x = tile.worldX + (enemy.width/2);
                 enemy.y = tile.worldY + (enemy.height/2);
+                console.log(enemy.fillRateATB);
                 this.unitsContainer.addChild(enemy);
                 this.units.push(enemy);
             }
         });
+
+        console.log(this.unit.fillRateATB);
 
         this.effectsContainer = this.game.add.group();
 
@@ -182,13 +186,11 @@ GAME.Game.prototype = {
                 sprite.destroy();
 
                 defender.takeDamage(1);
-                console.log(defender.health);
+
                 if (!defender.isAlive()) {
                     this.units.forEach((single_unit, index) => {
                         if (single_unit == defender) {
-                            console.log("removed..." + index);;
                             this.units.splice(index, 1);
-                            console.log(this.units);
                         }
                     });
                 }
@@ -226,7 +228,7 @@ GAME.Game.prototype = {
     },
     startTurn: function() {
         let unit = this.currentUnit;
-        console.log(unit);
+
         if (unit.type == Unit.Type.Player) {
             //this.waitingForPlayerAction = true;
             let tiles = this.getTiles();
@@ -301,14 +303,12 @@ GAME.Game.prototype = {
         /* Check for units ready to action */
         this.units.forEach(function(single_unit) {
             if (this.currentUnit == null && single_unit.isReady()) {
-                console.log("Oh oui");
                 this.currentUnit = single_unit;
             }
         }, this);
 
         /* Update the ATB if no units are ready */
         if (this.currentUnit == null) {
-            console.log('Updating');
             this.units.forEach(function(single_unit) {
                 if (single_unit.isAlive()) {
                     single_unit.updateATB();
