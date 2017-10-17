@@ -24,13 +24,20 @@ GAME.Game.prototype = {
 
         this.layers = {};
 
-        this.layers.floor = this.map.createLayer(0);
-        this.layers.walls = this.map.createLayer(1);
+        this.layers.floor = this.map.createLayer(0);//, this.game.width-100, this.game.height);
+        this.layers.walls = this.map.createLayer(1);//, this.game.width-100, this.game.height);
+
+/*
+        this.mapContainer = this.game.add.group();
+        this.mapContainer.addChild(this.layers.floor);
+        this.mapContainer.addChild(this.layers.walls);
+        this.mapContainer.x += 200;
+        */
 
         //  Scroll it
         this.layers.floor.resizeWorld();
-
-        this.map.setCollisionBetween(1, 10000, true, this.layers.walls);
+        //this.layers.floor.resize(this.game.width-100, this.game.height);
+        //this.layers.walls.resize(this.game.width-100, this.game.height);
 
         this.unitsContainer = this.game.add.group();
 
@@ -38,7 +45,7 @@ GAME.Game.prototype = {
 
         this.unit = new Unit(this.game, Unit.Type.Player);//this.game.add.sprite(160, 90, 'unit:skeleton');
         this.unit.health = 20;
-        let unitTile = this.map.getTile(5,2);
+        let unitTile = this.map.getTile(2,2);
         this.unit.x = unitTile.worldX;
         this.unit.y = unitTile.worldY;
         this.unit.hasMoved.add(this.unitHaveMoved, this);
