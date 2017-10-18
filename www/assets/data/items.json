@@ -5,7 +5,7 @@
 		"description": "Used to open door and chest"
 	},
 	"potion": {
-		"frame": 12,
+		"frame": 2,
 		"name": "Potion",
 		"description": "Give yourself some health back",
 		"usable": true,
@@ -14,9 +14,9 @@
 		],
 		"identified": false
 	},
-	"meat": {
-		"frame": 12,
-		"name": "Old meat",
+	"apple": {
+		"frame": 308,
+		"name": "Apple",
 		"description": "Take this, you're not yourself when you're hungry",
 		"usable": true,
 		"effects": [

@@ -46,6 +46,7 @@ GAME.Level.prototype.createMap = function() {
     this.layers = {};
     this.layers.floor = this.map.createLayer(0);
     this.layers.walls = this.map.createLayer(1);
+    this.layers.doors = this.map.createLayer(4);
 
     this.layers.floor.resizeWorld();
 };
@@ -97,7 +98,7 @@ GAME.Level.prototype.createItems = function() {
             let x = index - (y * this.map.width);
 
             let tile = this.map.getTile(x, y);
-            let item = new Item(this.game, "potion");
+            let item = new Item(this.game, "apple");
             item.x = tile.worldX + 24;
             item.y = tile.worldY + 24;
             this.itemsContainer.addChild(item);
@@ -351,7 +352,7 @@ GAME.Level.prototype.startTurn = function() {
 
         if (unit.isActive()) {
             /* Attack if in range */
-            if (path.length <= unit.range) {
+            if (path.length <= unit.range && path.length > 0) {
                 this.attackUnit(unit, this.unit);
             } else if (path.length > 1) {
                 this.moveUnit(unit, path[0].x, path[0].y);
