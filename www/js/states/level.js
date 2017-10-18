@@ -57,7 +57,7 @@ GAME.Level.prototype.createUnits = function() {
 
     /* Create the player */
     this.unit = new Player(this.game);
-    let unitTile = this.map.getTile(10, 3);
+    let unitTile = this.map.getTile(4, 8);
     this.unit.x = unitTile.worldX + (this.unit.width/2);
     this.unit.y = unitTile.worldY + (this.unit.width/2);
     this.unit.hasMoved.add(this.unitHaveMoved, this);
@@ -97,7 +97,7 @@ GAME.Level.prototype.createItems = function() {
             let x = index - (y * this.map.width);
 
             let tile = this.map.getTile(x, y);
-            let item = new Item(this.game, "key");
+            let item = new Item(this.game, "potion");
             item.x = tile.worldX + 24;
             item.y = tile.worldY + 24;
             this.itemsContainer.addChild(item);
@@ -227,8 +227,8 @@ GAME.Level.prototype.applyDamage = function(unit, amount) {
 
 GAME.Level.prototype.useItem = function(item) {
     if (item != null && item.data.effects != null) {
+        item.data.identified = true;
         item.data.effects.forEach(single_effect => {
-            console.log(single_effect.type);
             switch (single_effect.type) {
                 case "health":
                     this.currentUnit.heal(single_effect.amount);

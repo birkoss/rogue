@@ -30,7 +30,7 @@ PanelPopupItem.prototype.createItem = function() {
     label.x = (this.backgroundContainer.width - label.width)/2;
     this.addChild(label);
 
-    label = this.game.add.bitmapText(0, label.y + label.height + 10, "font:gui", this.item.data.description, 10);
+    label = this.game.add.bitmapText(0, label.y + label.height + 10, "font:gui", (this.item.data.identified != false ? this.item.data.description : "I wonder what this does..."), 10);
     label.tint = 0xffffff;
     label.maxWidth = this.backgroundContainer.width - 20;
     label.x = (this.backgroundContainer.width - label.width)/2;

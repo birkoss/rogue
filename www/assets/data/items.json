@@ -11,7 +11,8 @@
 		"usable": true,
 		"effects": [
 			{"type":"health", "amount": 10}
-		]
+		],
+		"identified": false
 	},
 	"meat": {
 		"frame": 12,
