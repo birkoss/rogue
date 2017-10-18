@@ -31,6 +31,9 @@ Panel.prototype.createMinimap = function() {
 
     this.minimap.inputEnabled = true;
     this.minimap.events.onInputUp.add(this.onMinimapClicked, this);
+
+    this.minimapContainer = this.game.add.group();
+    this.addChild(this.minimapContainer);
 };
 
 Panel.prototype.createStats = function() {
@@ -104,6 +107,32 @@ Panel.prototype.updateUnit = function(unit) {
 
     this.stats['health']['text'].text = unit.health + ' / ' + unit.maxHealth;
     this.stats['health']['progress'].width = Math.floor(unit.health / unit.maxHealth * 100);
+};
+
+Panel.prototype.updateMap = function(map, units) {
+    let size = 2;
+    let padding = 3;
+    for (let y=0; y<map.height; y++) {
+        for (let x=padding; x<map.width; x++) {
+            if (map.layers[1].data[y][x].index != -1) {
+                let sprite = this.minimapContainer.create((x-padding)*size, y*size, "tile:blank");
+                sprite.tint = 0x000000;
+                sprite.width = sprite.height = size;
+            }
+        }
+
+    }
+
+    units.forEach(single_unit => {
+        let unitTile = map.getTileWorldXY(single_unit.x, single_unit.y);
+        let sprite = this.minimapContainer.create((unitTile.x-padding)*size, unitTile.y*size, "tile:blank");
+        sprite.tint = (single_unit.Type == Unit.Type.Player ? 0x00ff00 : 0x000000);
+        sprite.width = sprite.height = size;
+    });
+
+    this.minimapContainer.x = this.minimap.x + ((this.minimap.width - this.minimapContainer.width) / 2);
+    this.minimapContainer.y = this.minimap.y + (this.minimap.height - this.minimapContainer.height) / 2;
+    
 };
 
 Panel.prototype.addItem = function(item) {
