@@ -55,6 +55,8 @@ PanelPopupItem.prototype.onUseButtonClicked = function(button, pointer) {
     this.slot.item = null;
     this.item.destroy();
 
+    console.log('@TODO: Call an end of turn');
+
     this.hide();
 };
 
@@ -63,6 +65,7 @@ PanelPopupItem.prototype.onDropButtonClicked = function(button, pointer) {
 
     this.onItemDropped.dispatch(this.item);
 
+    console.log('@TODO: Call an end of turn');
 //    this.item.destroy();
 
     this.hide();
