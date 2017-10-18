@@ -11,6 +11,7 @@ GAME.Level.prototype.create = function() {
 
     this.createUnits();
 
+    this.helpersContainer = this.game.add.group();
     this.effectsContainer = this.game.add.group();
 
     this.createPanel();
@@ -212,22 +213,22 @@ GAME.Level.prototype.startTurn = function() {
                     let tile = this.map.getTile(nx, ny);
 
                     if (tiles[ (ny * this.map.width) + nx] == 0) {
-                        let sprite = this.effectsContainer.create(tile.worldX, tile.worldY, 'helper:move');
+                        let sprite = this.helpersContainer.create(tile.worldX, tile.worldY, 'helper:move');
                         sprite.tint = 0x00ff00;
                         sprite.inputEnabled = true;
                         sprite.events.onInputUp.add(function() {
-                            this.effectsContainer.removeAll(true);
+                            this.helpersContainer.removeAll(true);
                             this.moveUnit(this.unit, nx, ny);
                         }, this);
                     } else {
                         this.units.forEach(single_unit => {
                             let unitTile = this.map.getTileWorldXY(single_unit.x, single_unit.y);
                             if (unitTile.x == tile.x && unitTile.y == tile.y) {
-                                let sprite = this.effectsContainer.create(tile.worldX, tile.worldY, 'helper:attack');
+                                let sprite = this.helpersContainer.create(tile.worldX, tile.worldY, 'helper:attack');
                                 sprite.tint = 0xff0000;
                                 sprite.inputEnabled = true;
                                 sprite.events.onInputUp.add(function() {
-                                    this.effectsContainer.removeAll(true);
+                                    this.helpersContainer.removeAll(true);
                                     this.attackUnit(this.unit, single_unit);
                                 }, this);
                             }
@@ -312,6 +313,7 @@ GAME.Level.prototype.dropItem = function(item) {
 };
 
 GAME.Level.prototype.endTurn = function() {
+    this.helpersContainer.removeAll(true);
     this.currentUnit.clearATB();
     this.currentUnit = null;
 };
@@ -343,6 +345,9 @@ GAME.Level.prototype.updateATB = function() {
 GAME.Level.prototype.onPanelInventorySlotClicked = function(slot) {
     var popup = new PanelPopupItem(this.game);
     popup.onItemDropped.add(this.dropItem, this);
+    popup.hasActionTaken.add(function() {
+        this.endTurn();
+    }, this);
     popup.setItem(slot.item, slot);
     this.panel.addChild(popup);
 

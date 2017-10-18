@@ -1,6 +1,8 @@
 function PanelPopup(game) {
     Phaser.Group.call(this, game);
 
+    this.hasActionTaken = new Phaser.Signal();
+
     this.createBackground();
 };
 
@@ -70,3 +72,7 @@ PanelPopup.prototype.hide = function() {
 PanelPopup.prototype.onBackButtonClicked = function(button, pointer) {
     this.hide();
 };
+
+PanelPopup.prototype.endTurn = function() {
+    this.hasActionTaken.dispatch();
+}
