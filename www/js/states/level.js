@@ -294,8 +294,8 @@ GAME.Level.prototype.dropItem = function(item) {
 /* Turns */
 
 GAME.Level.prototype.startTurn = function() {
-    this.panel.updateMap(this.map, this.units);
-    
+    this.panel.updateMap(this.map, this.itemsContainer, this.units);
+
     let unit = this.currentUnit;
 
     if (unit.type == Unit.Type.Player) {

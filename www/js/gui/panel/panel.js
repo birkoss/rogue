@@ -109,9 +109,10 @@ Panel.prototype.updateUnit = function(unit) {
     this.stats['health']['progress'].width = Math.floor(unit.health / unit.maxHealth * 100);
 };
 
-Panel.prototype.updateMap = function(map, units) {
-    let size = 2;
-    let padding = 3;
+Panel.prototype.updateMap = function(map, items, units) {
+    let size = 2;                                       // Size of each tile
+    let padding = 3;                                    // Remove the first X rows
+
     for (let y=0; y<map.height; y++) {
         for (let x=padding; x<map.width; x++) {
             if (map.layers[1].data[y][x].index != -1) {
@@ -123,6 +124,13 @@ Panel.prototype.updateMap = function(map, units) {
 
     }
 
+    items.forEach(single_item => {
+        let itemTile = map.getTileWorldXY(single_item.x, single_item.y);
+        let sprite = this.minimapContainer.create((itemTile.x-padding)*size, itemTile.y*size, "tile:blank");
+        sprite.tint = 0xffff00;
+        sprite.width = sprite.height = size;
+    });
+
     units.forEach(single_unit => {
         let unitTile = map.getTileWorldXY(single_unit.x, single_unit.y);
         let sprite = this.minimapContainer.create((unitTile.x-padding)*size, unitTile.y*size, "tile:blank");
@@ -132,7 +140,6 @@ Panel.prototype.updateMap = function(map, units) {
 
     this.minimapContainer.x = this.minimap.x + ((this.minimap.width - this.minimapContainer.width) / 2);
     this.minimapContainer.y = this.minimap.y + (this.minimap.height - this.minimapContainer.height) / 2;
-    
 };
 
 Panel.prototype.addItem = function(item) {
