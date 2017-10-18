@@ -57,7 +57,7 @@ GAME.Level.prototype.createUnits = function() {
 
     /* Create the player */
     this.unit = new Player(this.game);
-    let unitTile = this.map.getTile(4, 8);
+    let unitTile = this.map.getTile(11, 3);
     this.unit.x = unitTile.worldX + (this.unit.width/2);
     this.unit.y = unitTile.worldY + (this.unit.width/2);
     this.unit.hasMoved.add(this.unitHaveMoved, this);
@@ -155,6 +155,7 @@ GAME.Level.prototype.moveUnit = function(unit, x, y) {
 };
 
 GAME.Level.prototype.attackUnit = function(attacker, defender) {
+    /* @TODO: Check the distance for a physical or ranged attack */
     let nx = attacker.x;
     let ny = attacker.y;
 
@@ -271,35 +272,40 @@ GAME.Level.prototype.startTurn = function() {
         let tiles = this.getTiles();
         let unitTile = this.map.getTileWorldXY(this.unit.x, this.unit.y);
 
-        for (let y=-1; y<=1; y++) {
-            for (let x=-1; x<=1; x++) {
-                if (Math.abs(x) != Math.abs(y)) {
+        for (let y=-unit.range; y<=unit.range; y++) {
+            for (let x=-unit.range; x<=unit.range; x++) {
+                if ((y == 0 || x == 0) && (Math.abs(x) + Math.abs(y) > 0)) {
                     let nx = unitTile.x + x;
                     let ny = unitTile.y + y;
                     
                     let tile = this.map.getTile(nx, ny);
+                    let distance = Math.abs(Math.abs(x) - Math.abs(y));
 
                     if (tiles[ (ny * this.map.width) + nx] == 0) {
-                        let sprite = this.helpersContainer.create(tile.worldX, tile.worldY, 'helper:move');
-                        sprite.tint = 0x00ff00;
-                        sprite.inputEnabled = true;
-                        sprite.events.onInputUp.add(function() {
-                            this.helpersContainer.removeAll(true);
-                            this.moveUnit(this.unit, nx, ny);
-                        }, this);
+                        if (distance == 1) {
+                            let sprite = this.helpersContainer.create(tile.worldX, tile.worldY, 'helper:move');
+                            sprite.tint = 0x00ff00;
+                            sprite.inputEnabled = true;
+                            sprite.events.onInputUp.add(function() {
+                                this.helpersContainer.removeAll(true);
+                                this.moveUnit(this.unit, nx, ny);
+                            }, this);
+                        }
                     } else {
-                        this.units.forEach(single_unit => {
-                            let unitTile = this.map.getTileWorldXY(single_unit.x, single_unit.y);
-                            if (unitTile.x == tile.x && unitTile.y == tile.y) {
-                                let sprite = this.helpersContainer.create(tile.worldX, tile.worldY, 'helper:attack');
-                                sprite.tint = 0xff0000;
-                                sprite.inputEnabled = true;
-                                sprite.events.onInputUp.add(function() {
-                                    this.helpersContainer.removeAll(true);
-                                    this.attackUnit(this.unit, single_unit);
-                                }, this);
-                            }
-                        });
+                        if (distance <= unit.range) {
+                            this.units.forEach(single_unit => {
+                                let unitTile = this.map.getTileWorldXY(single_unit.x, single_unit.y);
+                                if (unitTile.x == tile.x && unitTile.y == tile.y) {
+                                    let sprite = this.helpersContainer.create(tile.worldX, tile.worldY, 'helper:attack');
+                                    sprite.tint = 0xff0000;
+                                    sprite.inputEnabled = true;
+                                    sprite.events.onInputUp.add(function() {
+                                        this.helpersContainer.removeAll(true);
+                                        this.attackUnit(this.unit, single_unit);
+                                    }, this);
+                                }
+                            });
+                        }
                     }
                 }
             }
@@ -313,10 +319,11 @@ GAME.Level.prototype.startTurn = function() {
         let path = pf.find({x:unitTile.x, y:unitTile.y}, {x:playerTile.x, y:playerTile.y});
 
         if (unit.isActive()) {
-            if (path.length > 1) {
-                this.moveUnit(unit, path[0].x, path[0].y);
-            } else if (path.length == 1) {
+            /* Attack if in range */
+            if (path.length <= unit.range) {
                 this.attackUnit(unit, this.unit);
+            } else if (path.length > 1) {
+                this.moveUnit(unit, path[0].x, path[0].y);
             } else {
                 this.endTurn();
             }

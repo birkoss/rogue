@@ -7,6 +7,8 @@ function Unit(game, type, unitID) {
     this.data = GAME.json['units'][unitID];
     this.setHealth(this.data.health);
 
+    this.range = (this.data.range != null ? this.data.range : 1);
+
     this.spriteContainer = this.game.add.group();
     this.addChild(this.spriteContainer);
 
