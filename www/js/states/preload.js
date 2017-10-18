@@ -19,9 +19,6 @@ GAME.Preload.prototype.preload = function() {
     this.load.image('helper:back', 'assets/images/helpers/back.png');
     this.load.image('helper:attack', 'assets/images/helpers/attack.png');
 
-    this.load.spritesheet('effect:attack', 'assets/images/effects/attack.png', 64, 64);
-    this.load.spritesheet('effect:blood', 'assets/images/effects/blood.png', 48, 48);
-
     this.load.spritesheet('unit:knight', 'assets/images/units/knight.png', 48, 48);
     this.load.spritesheet('unit:skeleton', 'assets/images/units/skeleton.png', 48, 48);
 

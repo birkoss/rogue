@@ -77,7 +77,8 @@ Unit.prototype.takeDamage = function(damage) {
 
     if (!this.isAlive()) {
         this.spriteContainer.removeAll(true);
-        let sprite = this.spriteContainer.create(0, 0, 'effect:blood');
+        let sprite = this.spriteContainer.create(0, 0, 'tileset:effectsSmall');
+        sprite.frame = this.game.rnd.integerInRange(94, 99);
         sprite.anchor.set(0.5, 0.5);
     }
 };
