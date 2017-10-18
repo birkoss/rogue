@@ -6,5 +6,10 @@
 	"rat": {
 		"frames": [223, 241],
 		"health": 2
+	},
+	"ghost": {
+		"frames": [4, 22],
+		"health": 1,
+		"range": 2
 	}
 }

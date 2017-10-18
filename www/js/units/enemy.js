@@ -1,5 +1,5 @@
-function Enemy(game) {
-	Unit.call(this, game, Unit.Type.Enemy, 'rat');
+function Enemy(game, enemyID) {
+	Unit.call(this, game, Unit.Type.Enemy, enemyID);
 
     this.fillRateATB = 25;
 

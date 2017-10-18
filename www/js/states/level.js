@@ -75,7 +75,7 @@ GAME.Level.prototype.createUnits = function() {
             let x = index - (y * this.map.width);
 
             let tile = this.map.getTile(x, y);
-            let enemy = new Enemy(this.game);
+            let enemy = new Enemy(this.game, "ghost");
             enemy.hasMoved.add(this.unitHaveMoved, this);
             enemy.x = tile.worldX + (enemy.width/2);
             enemy.y = tile.worldY + (enemy.height/2);
