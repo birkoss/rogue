@@ -1,8 +1,8 @@
 function Effect(game, x, y, type) {
-    let spriteSheet = "effect:attack"
+    let spriteSheet = "tileset:effectsLarge"
     switch (type) {
         case "attack":
-            spriteSheet = "effect:attack";
+            spriteSheet = "tileset:effectsLarge";
             break;
     }
 
@@ -11,7 +11,7 @@ function Effect(game, x, y, type) {
 
     switch (type) {
         case "attack":
-            this.animations.add('idle', [0, 1, 0, 1, 0], 8, false);
+            this.animations.add('idle', [10, 11, 10, 11, 10], 8, false);
             break;
     }
     this.animations.play('idle');

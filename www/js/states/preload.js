@@ -12,6 +12,8 @@ GAME.Preload.prototype.preload = function() {
     this.load.image('tileset:world', 'assets/images/tilesets/world.png');
     this.load.spritesheet('tileset:items', 'assets/images/tilesets/items.png', 32, 32);
     this.load.spritesheet('tileset:units', 'assets/images/tilesets/units.png', 48, 48);
+    this.load.spritesheet('tileset:effectsSmall', 'assets/images/tilesets/effectsSmall.png', 48, 48);
+    this.load.spritesheet('tileset:effectsLarge', 'assets/images/tilesets/effectsLarge.png', 64, 64);
 
     this.load.image('helper:move', 'assets/images/helpers/move.png');
     this.load.image('helper:back', 'assets/images/helpers/back.png');

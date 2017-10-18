@@ -57,7 +57,7 @@ GAME.Level.prototype.createUnits = function() {
 
     /* Create the player */
     this.unit = new Player(this.game);
-    let unitTile = this.map.getTile(4, 8);
+    let unitTile = this.map.getTile(9, 6);
     this.unit.x = unitTile.worldX + (this.unit.width/2);
     this.unit.y = unitTile.worldY + (this.unit.width/2);
     this.unit.hasMoved.add(this.unitHaveMoved, this);
@@ -191,7 +191,7 @@ GAME.Level.prototype.attackUnit = function(attacker, defender) {
         }, this);
         tween.start();
     } else {
-        let projectile = this.effectsContainer.create(attacker.x, attacker.y, 'effect:blood');
+        let projectile = this.effectsContainer.create(attacker.x, attacker.y, 'tileset:effectsLarge');
         projectile.anchor.set(0.5, 0.5);
         projectile.animations.add('idle', [0, 1], 8, true);
         projectile.animations.play('idle');
@@ -294,7 +294,8 @@ GAME.Level.prototype.dropItem = function(item) {
 /* Turns */
 
 GAME.Level.prototype.startTurn = function() {
-    this.panel.updateMap(this.map, this.itemsContainer, this.units);
+    // @TODO: Must find a way to make this works without slowing the gameplay
+    //this.panel.updateMap(this.map, this.itemsContainer, this.units);
 
     let unit = this.currentUnit;
 
