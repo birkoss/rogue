@@ -16,7 +16,7 @@ GAME.Level.prototype.create = function() {
     this.createPanel();
 
     /* @TODO: Remove */
-    this.panel.addItem(this.items[0]);
+    this.panel.addItem(this.itemsContainer.getChildAt(0));
 };
 
 GAME.Level.prototype.update = function() {
@@ -79,7 +79,6 @@ GAME.Level.prototype.createUnits = function() {
 
 GAME.Level.prototype.createItems = function() {
     this.itemsContainer = this.game.add.group();
-    this.items = [];
 
     /* Create the enemies based on the 3rd layer */
     let tiles = this.game.cache.getTilemapData('level:1').data.layers[2].data;
@@ -94,7 +93,6 @@ GAME.Level.prototype.createItems = function() {
             item.x = tile.worldX + 24;
             item.y = tile.worldY + 24;
             this.itemsContainer.addChild(item);
-            this.items.push(item);
         }
     });
 };
@@ -125,6 +123,17 @@ GAME.Level.prototype.getUnitPosition = function(unit) {
 GAME.Level.prototype.getItemPosition = function(item) {
     return this.map.getTileWorldXY(item.x - (item.width/2), item.y - (item.height/2));
 };
+
+GAME.Level.prototype.getItemAt = function(x, y) {
+    let item = null;
+    this.itemsContainer.forEach(single_item => {
+        let itemTile = this.getItemPosition(single_item);
+        if (itemTile.x == x && itemTile.y == y) {
+            item = single_item;
+        }
+    });
+    return item;
+}
 
 GAME.Level.prototype.moveUnit = function(unit, x, y) {
     let tile = this.map.getTile(x, y);
@@ -255,6 +264,22 @@ GAME.Level.prototype.startTurn = function() {
 };
 
 GAME.Level.prototype.dropItem = function(item) {
+    let position = null;
+    let unitTile = this.getUnitPosition(this.unit);
+
+    /* Try under the unit */
+    if (this.getItemAt(unitTile.x, unitTile.y) == null) {
+        position = {x: unitTile.x, y:unitTile.y};
+    }
+
+    if (position != null) {
+        let tile = this.map.getTile(position.x, position.y);
+        let item = new Item(this.game, "key");
+        item.x = tile.worldX + 24;
+        item.y = tile.worldY + 24;
+        this.itemsContainer.addChild(item);
+    }
+
     console.log(item);
     /* @TODO: Try at unit.x/y */
     /* Until empty slot found, browse 1 to limit */
