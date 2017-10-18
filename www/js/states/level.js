@@ -92,7 +92,7 @@ GAME.Level.prototype.createItems = function() {
             let x = index - (y * this.map.width);
 
             let tile = this.map.getTile(x, y);
-            let item = new Item(this.game, "key");
+            let item = new Item(this.game, "meat");
             item.x = tile.worldX + 24;
             item.y = tile.worldY + 24;
             this.itemsContainer.addChild(item);
@@ -266,6 +266,24 @@ GAME.Level.prototype.startTurn = function() {
     }
 };
 
+GAME.Level.prototype.useItem = function(item) {
+    if (item != null && item.data.effects != null) {
+        item.data.effects.forEach(single_effect => {
+            console.log(single_effect.type);
+            switch (single_effect.type) {
+                case "health":
+                    this.currentUnit.heal(single_effect.amount);
+                    break;
+                case "hunger":
+                    this.currentUnit.eat(single_effect.amount);
+                    break;
+            }
+        });
+    }
+
+    this.endTurn();
+};
+
 GAME.Level.prototype.dropItem = function(item) {
     let position = null;
     let unitTile = this.getUnitPosition(this.unit);
@@ -310,6 +328,8 @@ GAME.Level.prototype.dropItem = function(item) {
         /* If we can't find a spot for the item, destroy it... */
         item.destroy();
     }
+
+    this.endTurn();
 };
 
 GAME.Level.prototype.endTurn = function() {
@@ -342,9 +362,12 @@ GAME.Level.prototype.updateATB = function() {
 
 /* Events */
 
+
+
 GAME.Level.prototype.onPanelInventorySlotClicked = function(slot) {
     var popup = new PanelPopupItem(this.game);
     popup.onItemDropped.add(this.dropItem, this);
+    popup.onItemUsed.add(this.useItem, this);
     popup.hasActionTaken.add(function() {
         this.endTurn();
     }, this);

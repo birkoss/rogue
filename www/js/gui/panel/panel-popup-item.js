@@ -2,6 +2,7 @@ function PanelPopupItem(game) {
     PanelPopup.call(this, game);
 
     this.onItemDropped = new Phaser.Signal();
+    this.onItemUsed = new Phaser.Signal();
 
     this.createControls("Item");
 };
@@ -53,9 +54,9 @@ PanelPopupItem.prototype.setItem = function(item, slot) {
 
 PanelPopupItem.prototype.onUseButtonClicked = function(button, pointer) {
     this.slot.item = null;
-    this.item.destroy();
 
-    this.endTurn();
+    this.onItemUsed.dispatch(this.item);
+    this.item.destroy();
 
     this.hide();
 };
@@ -64,7 +65,6 @@ PanelPopupItem.prototype.onDropButtonClicked = function(button, pointer) {
     this.slot.item = null;
 
     this.onItemDropped.dispatch(this.item);
-    this.endTurn();
 
     this.hide();
 };

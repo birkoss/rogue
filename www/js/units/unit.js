@@ -38,6 +38,11 @@ Unit.prototype.face = function(direction) {
     this.sprite.scale.x = direction;
 };
 
+Unit.prototype.heal = function(amount) {
+    this.health += amount;
+    this.maxHealth += amount;
+}
+
 Unit.prototype.isAlive = function() {
     return this.health > 0;
 };

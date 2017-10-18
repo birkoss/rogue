@@ -8,3 +8,8 @@ function Player(game) {
 
 Player.prototype = Unit.prototype;
 Player.prototype.constructor = Player;
+
+Player.prototype.eat = function(amount) {
+    this.hunger += amount;
+    this.maxHunger += amount;
+}
