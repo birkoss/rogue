@@ -17,6 +17,8 @@ GAME.Level.prototype.create = function() {
 
     /* @TODO: Remove */
     this.panel.addItem(this.itemsContainer.getChildAt(0));
+    this.panel.addItem(this.itemsContainer.getChildAt(1));
+    this.panel.addItem(this.itemsContainer.getChildAt(2));
 };
 
 GAME.Level.prototype.update = function() {
@@ -274,7 +276,27 @@ GAME.Level.prototype.dropItem = function(item) {
 
     /* Else, try around adjacent to the player */
     if (position == null) {
-        console.log('@TODO: Find surronding area to drop the item');
+        let maxDepth = 3;
+        let positions = [{x:-1, y:0, ok:true}, {x:1, y:0, ok:true}, {x:0, y:-1, ok:true}, {x:0, y:1, ok:true}];
+        for (let d=1; d<=maxDepth; d++) {
+            positions.forEach(single_position => {
+                if (single_position.ok) {
+                    let nx = (single_position.x * d) + unitTile.x;
+                    let ny = (single_position.y * d) + unitTile.y;
+
+                    if (this.map.getTile(nx, ny) == null) {
+                        single_position.ok = false;
+                    } else {
+                        let tiles = this.getTiles(Unit.Type.Player);
+                        if (tiles[(ny * this.map.width) + nx] != 0) {
+                            single_position.ok = false;
+                        } else if (position == null && this.getItemAt(nx, ny) == null) {
+                            position = {x:nx, y:ny};
+                        }
+                    }
+                }
+            });
+        }
     }
 
     /* Drop the item in the next free slot */
@@ -283,11 +305,10 @@ GAME.Level.prototype.dropItem = function(item) {
         item.x = tile.worldX + 24;
         item.y = tile.worldY + 24;
         this.itemsContainer.addChild(item);
+    } else {
+        /* If we can't find a spot for the item, destroy it... */
+        item.destroy();
     }
-
-    console.log(item);
-    /* @TODO: Try at unit.x/y */
-    /* Until empty slot found, browse 1 to limit */
 };
 
 GAME.Level.prototype.endTurn = function() {
