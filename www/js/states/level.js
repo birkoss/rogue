@@ -57,7 +57,7 @@ GAME.Level.prototype.createUnits = function() {
 
     /* Create the player */
     this.unit = new Player(this.game);
-    let unitTile = this.map.getTile(11, 3);
+    let unitTile = this.map.getTile(10, 3);
     this.unit.x = unitTile.worldX + (this.unit.width/2);
     this.unit.y = unitTile.worldY + (this.unit.width/2);
     this.unit.hasMoved.add(this.unitHaveMoved, this);
@@ -191,23 +191,23 @@ GAME.Level.prototype.attackUnit = function(attacker, defender) {
         }, this);
         tween.start();
     } else {
-        let projectile = this.effectsContainer.create(attacker.x, attacker.y, 'tileset:projectile');
+        let projectile = this.effectsContainer.create(attacker.x, attacker.y, 'effect:blood');
         projectile.anchor.set(0.5, 0.5);
         projectile.animations.add('idle', [0, 1], 8, true);
         projectile.animations.play('idle');
 
-        let tween = this.game.add.tween(projectile).to({x:defender.x, y:defender.y}, 100);
+        let tween = this.game.add.tween(projectile).to({x:defender.x, y:defender.y}, 500);
         tween.onComplete.add(function() {
             projectile.destroy();
 
-            let effect = new Effect(this.game, attacker.x, attacker.y, "attack");
+            let effect = new Effect(this.game, defender.x, defender.y, "attack");
             this.effectsContainer.addChild(effect);
             effect.onEffectComplete.add(function() {
                 this.applyDamage(defender, 1);
 
                 this.endTurn();
             }, this);
-        });
+        }, this);
         tween.start();
     }
 };
