@@ -2,6 +2,8 @@ var GAME = GAME || {};
 
 GAME.Level = function() {};
 
+/* Phaser */
+
 GAME.Level.prototype.create = function() {
     this.game.stage.backgroundColor = 0x262626;
 
@@ -31,6 +33,8 @@ GAME.Level.prototype.update = function() {
     }
 };
 
+/* Creation */
+
 GAME.Level.prototype.createMap = function() {
     this.map = this.game.add.tilemap('level:1', 48, 48);
 
@@ -43,7 +47,6 @@ GAME.Level.prototype.createMap = function() {
 
     this.layers.floor.resizeWorld();
 };
-
 
 GAME.Level.prototype.createUnits = function() {
     this.unitsContainer = this.game.add.group();
@@ -108,16 +111,7 @@ GAME.Level.prototype.createPanel = function() {
     this.panel.fixedToCamera = true;
 };
 
-GAME.Level.prototype.showPopup = function(label) {
-    this.popup = new Popup(this.game, label);
-    this.popupContainer.addChild(this.popup);
-    this.popupContainer.x = (this.game.width - this.popupContainer.width) / 2;
-    this.popupContainer.originalY = (this.game.height - this.popupContainer.height - this.popupContainer.x);
-
-    this.popupContainer.y = -this.game.height;
-    let tween = this.game.add.tween(this.popupContainer).to({y:this.popupContainer.originalY}, 1000, Phaser.Easing.Elastic.Out);
-    tween.start();
-};
+/* Helpers */
 
 GAME.Level.prototype.getUnitPosition = function(unit) {
     return this.map.getTileWorldXY(unit.x - (unit.width/2), unit.y - (unit.height/2));
@@ -138,10 +132,26 @@ GAME.Level.prototype.getItemAt = function(x, y) {
     return item;
 }
 
+GAME.Level.prototype.getTiles = function(excludedType) {
+    let tiles = this.game.cache.getTilemapData('level:1').data.layers[1].data.slice(0);
+
+    this.units.forEach(single_unit => {
+        if (excludedType == null || excludedType != single_unit.type) {
+            let tile = this.map.getTileWorldXY(single_unit.x, single_unit.y);
+            tiles[ (tile.y * this.map.width) + tile.x ] = 1;
+        }
+    });
+
+    return tiles;
+};
+
+/* Actions */
+
 GAME.Level.prototype.moveUnit = function(unit, x, y) {
     let tile = this.map.getTile(x, y);
     unit.move(tile.worldX, tile.worldY);
 };
+
 GAME.Level.prototype.attackUnit = function(attacker, defender) {
     let nx = attacker.x;
     let ny = attacker.y;
@@ -184,18 +194,73 @@ GAME.Level.prototype.attackUnit = function(attacker, defender) {
     tween.start();
 };
 
-GAME.Level.prototype.getTiles = function(excludedType) {
-    let tiles = this.game.cache.getTilemapData('level:1').data.layers[1].data.slice(0);
+GAME.Level.prototype.useItem = function(item) {
+    if (item != null && item.data.effects != null) {
+        item.data.effects.forEach(single_effect => {
+            console.log(single_effect.type);
+            switch (single_effect.type) {
+                case "health":
+                    this.currentUnit.heal(single_effect.amount);
+                    break;
+                case "hunger":
+                    this.currentUnit.eat(single_effect.amount);
+                    break;
+            }
+        });
+    }
 
-    this.units.forEach(single_unit => {
-        if (excludedType == null || excludedType != single_unit.type) {
-            let tile = this.map.getTileWorldXY(single_unit.x, single_unit.y);
-            tiles[ (tile.y * this.map.width) + tile.x ] = 1;
-        }
-    });
-
-    return tiles;
+    this.endTurn();
 };
+
+GAME.Level.prototype.dropItem = function(item) {
+    let position = null;
+    let unitTile = this.getUnitPosition(this.unit);
+
+    /* Try under the unit */
+    if (this.getItemAt(unitTile.x, unitTile.y) == null) {
+        position = {x: unitTile.x, y:unitTile.y};
+    }
+
+    /* Else, try around adjacent to the player */
+    if (position == null) {
+        let maxDepth = 3;
+        let positions = [{x:-1, y:0, ok:true}, {x:1, y:0, ok:true}, {x:0, y:-1, ok:true}, {x:0, y:1, ok:true}];
+        for (let d=1; d<=maxDepth; d++) {
+            positions.forEach(single_position => {
+                if (single_position.ok) {
+                    let nx = (single_position.x * d) + unitTile.x;
+                    let ny = (single_position.y * d) + unitTile.y;
+
+                    if (this.map.getTile(nx, ny) == null) {
+                        single_position.ok = false;
+                    } else {
+                        let tiles = this.getTiles(Unit.Type.Player);
+                        if (tiles[(ny * this.map.width) + nx] != 0) {
+                            single_position.ok = false;
+                        } else if (position == null && this.getItemAt(nx, ny) == null) {
+                            position = {x:nx, y:ny};
+                        }
+                    }
+                }
+            });
+        }
+    }
+
+    /* Drop the item in the next free slot */
+    if (position != null) {
+        let tile = this.map.getTile(position.x, position.y);
+        item.x = tile.worldX + 24;
+        item.y = tile.worldY + 24;
+        this.itemsContainer.addChild(item);
+    } else {
+        /* If we can't find a spot for the item, destroy it... */
+        item.destroy();
+    }
+
+    this.endTurn();
+};
+
+/* Turns */
 
 GAME.Level.prototype.startTurn = function() {
     let unit = this.currentUnit;
@@ -266,77 +331,13 @@ GAME.Level.prototype.startTurn = function() {
     }
 };
 
-GAME.Level.prototype.useItem = function(item) {
-    if (item != null && item.data.effects != null) {
-        item.data.effects.forEach(single_effect => {
-            console.log(single_effect.type);
-            switch (single_effect.type) {
-                case "health":
-                    this.currentUnit.heal(single_effect.amount);
-                    break;
-                case "hunger":
-                    this.currentUnit.eat(single_effect.amount);
-                    break;
-            }
-        });
-    }
-
-    this.endTurn();
-};
-
-GAME.Level.prototype.dropItem = function(item) {
-    let position = null;
-    let unitTile = this.getUnitPosition(this.unit);
-
-    /* Try under the unit */
-    if (this.getItemAt(unitTile.x, unitTile.y) == null) {
-        position = {x: unitTile.x, y:unitTile.y};
-    }
-
-    /* Else, try around adjacent to the player */
-    if (position == null) {
-        let maxDepth = 3;
-        let positions = [{x:-1, y:0, ok:true}, {x:1, y:0, ok:true}, {x:0, y:-1, ok:true}, {x:0, y:1, ok:true}];
-        for (let d=1; d<=maxDepth; d++) {
-            positions.forEach(single_position => {
-                if (single_position.ok) {
-                    let nx = (single_position.x * d) + unitTile.x;
-                    let ny = (single_position.y * d) + unitTile.y;
-
-                    if (this.map.getTile(nx, ny) == null) {
-                        single_position.ok = false;
-                    } else {
-                        let tiles = this.getTiles(Unit.Type.Player);
-                        if (tiles[(ny * this.map.width) + nx] != 0) {
-                            single_position.ok = false;
-                        } else if (position == null && this.getItemAt(nx, ny) == null) {
-                            position = {x:nx, y:ny};
-                        }
-                    }
-                }
-            });
-        }
-    }
-
-    /* Drop the item in the next free slot */
-    if (position != null) {
-        let tile = this.map.getTile(position.x, position.y);
-        item.x = tile.worldX + 24;
-        item.y = tile.worldY + 24;
-        this.itemsContainer.addChild(item);
-    } else {
-        /* If we can't find a spot for the item, destroy it... */
-        item.destroy();
-    }
-
-    this.endTurn();
-};
-
 GAME.Level.prototype.endTurn = function() {
     this.helpersContainer.removeAll(true);
     this.currentUnit.clearATB();
     this.currentUnit = null;
 };
+
+/* ATB */
 
 GAME.Level.prototype.updateATB = function() {
     this.currentUnit = null;
@@ -362,8 +363,6 @@ GAME.Level.prototype.updateATB = function() {
 
 /* Events */
 
-
-
 GAME.Level.prototype.onPanelInventorySlotClicked = function(slot) {
     var popup = new PanelPopupItem(this.game);
     popup.onItemDropped.add(this.dropItem, this);
@@ -387,11 +386,9 @@ GAME.Level.prototype.unitHaveMoved = function(unit) {
         this.itemsContainer.forEach(single_item => {
             let itemTile = this.getUnitPosition(single_item);
 
+            /* If possible, add the item under the player in the panel */
             if (unitTile.x == itemTile.x && unitTile.y == itemTile.y) {
                 this.panel.addItem(single_item);
-
-//                this.itemsContainer.removeChild(single_item);
-                //single_item.destroy();
             }
         });
     }
