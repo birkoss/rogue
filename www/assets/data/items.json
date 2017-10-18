@@ -4,5 +4,23 @@
 		"name": "Golden Key",
 		"description": "Used to open door and chest",
 		"usable": false
+	},
+	"potion": {
+		"frame": 12,
+		"name": "Potion",
+		"description": "Give yourself some health back",
+		"usable": true,
+		"effects": [
+			{"type":"health", "amount": 10}
+		]
+	},
+	"meat": {
+		"frame": 12,
+		"name": "Old meat",
+		"description": "Take this, you're not yourself when you're hungry",
+		"usable": true,
+		"effects": [
+			{"type":"hunger", "amount": 20}
+		]
 	}
 }
