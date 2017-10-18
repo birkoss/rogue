@@ -11,6 +11,6 @@
 	"ghost": {
 		"frames": [4, 22],
 		"health": 1,
-		"range": 2
+		"range": 1
 	}
 }

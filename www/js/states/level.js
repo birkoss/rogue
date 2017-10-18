@@ -155,7 +155,13 @@ GAME.Level.prototype.moveUnit = function(unit, x, y) {
 };
 
 GAME.Level.prototype.attackUnit = function(attacker, defender) {
-    /* @TODO: Check the distance for a physical or ranged attack */
+    let attackerTile = this.map.getTileWorldXY(attacker.x, attacker.y);
+    let defenderTile = this.map.getTileWorldXY(defender.x, defender.y);
+
+    let pf = new Pathfinding(this.getTiles(defender.type), this.map.width, this.map.height);
+    let path = pf.find({x:attackerTile.x, y:attackerTile.y}, {x:defenderTile.x, y:defenderTile.y});
+    let distance = path.length;
+
     let nx = attacker.x;
     let ny = attacker.y;
 
@@ -168,33 +174,55 @@ GAME.Level.prototype.attackUnit = function(attacker, defender) {
 
     this.unitsContainer.swap(attacker, this.unitsContainer.getChildAt(this.unitsContainer.children.length - 1));
 
-    let tween = this.game.add.tween(attacker).to({x:defender.x, y:defender.y}, 100);
-    tween.onComplete.add(function() {
-        let sprite = this.effectsContainer.create(attacker.x, attacker.y, 'effect:attack');
-        sprite.anchor.set(0.5, 0.5);
-        sprite.animations.add('idle', [0, 1, 0, 1, 0], 8, false);
-        sprite.animations.currentAnim.onComplete.add(function() {
-            sprite.destroy();
+    if (distance == 1) {
+        let tween = this.game.add.tween(attacker).to({x:defender.x, y:defender.y}, 100);
+        tween.onComplete.add(function() {
+            let effect = new Effect(this.game, attacker.x, attacker.y, "attack");
+            this.effectsContainer.addChild(effect);
+            effect.onEffectComplete.add(function() {
+                this.applyDamage(defender, 1);
 
-            defender.takeDamage(1);
+                let tween = this.game.add.tween(attacker).to({x:nx, y:ny}, 100);
+                tween.onComplete.add(function() {
+                    this.endTurn();
+                }, this);
+                tween.start();
+            }, this);
+        }, this);
+        tween.start();
+    } else {
+        let projectile = this.effectsContainer.create(attacker.x, attacker.y, 'tileset:projectile');
+        projectile.anchor.set(0.5, 0.5);
+        projectile.animations.add('idle', [0, 1], 8, true);
+        projectile.animations.play('idle');
 
-            if (!defender.isAlive()) {
-                this.units.forEach((single_unit, index) => {
-                    if (single_unit == defender) {
-                        this.units.splice(index, 1);
-                    }
-                });
-            }
+        let tween = this.game.add.tween(projectile).to({x:defender.x, y:defender.y}, 100);
+        tween.onComplete.add(function() {
+            projectile.destroy();
 
-            let tween = this.game.add.tween(attacker).to({x:nx, y:ny}, 100);
-            tween.onComplete.add(function() {
+            let effect = new Effect(this.game, attacker.x, attacker.y, "attack");
+            this.effectsContainer.addChild(effect);
+            effect.onEffectComplete.add(function() {
+                this.applyDamage(defender, 1);
+
                 this.endTurn();
             }, this);
-            tween.start();
-        }, this);
-        sprite.animations.play('idle');
-    }, this);
-    tween.start();
+        });
+        tween.start();
+    }
+};
+
+GAME.Level.prototype.applyDamage = function(unit, amount) {
+    unit.takeDamage(amount);
+
+    /* Remove the dead unit from the list */
+    if (!unit.isAlive()) {
+        this.units.forEach((single_unit, index) => {
+            if (single_unit == unit) {
+                this.units.splice(index, 1);
+            }
+        });
+    }
 };
 
 GAME.Level.prototype.useItem = function(item) {
