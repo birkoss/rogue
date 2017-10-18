@@ -2,8 +2,7 @@
 	"key": {
 		"frame": 137,
 		"name": "Golden Key",
-		"description": "Used to open door and chest",
-		"usable": false
+		"description": "Used to open door and chest"
 	},
 	"potion": {
 		"frame": 12,
@@ -21,6 +20,14 @@
 		"usable": true,
 		"effects": [
 			{"type":"hunger", "amount": 20}
+		]
+	},
+	"stair": {
+		"frame": 12,
+		"name": "Stair",
+		"pickable": false,
+		"triggers": [
+			{"type":"level"}
 		]
 	}
 }

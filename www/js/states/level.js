@@ -19,9 +19,11 @@ GAME.Level.prototype.create = function() {
     this.createPanel();
 
     /* @TODO: Remove */
+    /*
     this.panel.addItem(this.itemsContainer.getChildAt(0));
     this.panel.addItem(this.itemsContainer.getChildAt(1));
     this.panel.addItem(this.itemsContainer.getChildAt(2));
+    */
 };
 
 GAME.Level.prototype.update = function() {
@@ -95,7 +97,7 @@ GAME.Level.prototype.createItems = function() {
             let x = index - (y * this.map.width);
 
             let tile = this.map.getTile(x, y);
-            let item = new Item(this.game, "meat");
+            let item = new Item(this.game, "key");
             item.x = tile.worldX + 24;
             item.y = tile.worldY + 24;
             this.itemsContainer.addChild(item);
@@ -388,7 +390,19 @@ GAME.Level.prototype.unitHaveMoved = function(unit) {
 
             /* If possible, add the item under the player in the panel */
             if (unitTile.x == itemTile.x && unitTile.y == itemTile.y) {
-                this.panel.addItem(single_item);
+                if (single_item.data.pickable == null || single_item.data.pickable) {
+                    this.panel.addItem(single_item);
+                } else {
+                    if (single_item.data.triggers != null) {
+                        single_item.data.triggers.forEach(single_trigger => {
+                            switch (single_trigger.type) {
+                                case "level":
+                                    alert("@TODO: NEXT LEVEL")
+                                    break;
+                            }
+                        });
+                    }
+                }
             }
         });
     }
