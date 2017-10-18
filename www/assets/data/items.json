@@ -2,6 +2,7 @@
 	"key": {
 		"frame": 137,
 		"name": "Golden Key",
-		"description": "Used to open door and chest"
+		"description": "Used to open door and chest",
+		"usable": false
 	}
 }

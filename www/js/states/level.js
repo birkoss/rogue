@@ -254,6 +254,12 @@ GAME.Level.prototype.startTurn = function() {
     }
 };
 
+GAME.Level.prototype.dropItem = function(item) {
+    console.log(item);
+    /* @TODO: Try at unit.x/y */
+    /* Until empty slot found, browse 1 to limit */
+};
+
 GAME.Level.prototype.endTurn = function() {
     this.currentUnit.clearATB();
     this.currentUnit = null;
@@ -284,7 +290,12 @@ GAME.Level.prototype.updateATB = function() {
 /* Events */
 
 GAME.Level.prototype.onPanelInventorySlotClicked = function(slot) {
+    var popup = new PanelPopupItem(this.game);
+    popup.onItemDropped.add(this.dropItem, this);
+    popup.setItem(slot.item, slot);
+    this.panel.addChild(popup);
 
+    popup.show();
 };
 
 GAME.Level.prototype.onPanelMinimapClicked = function(minimap) {

@@ -1,12 +1,9 @@
 function PanelPopupItem(game) {
     PanelPopup.call(this, game);
 
-    this.createControls("Item");
+    this.onItemDropped = new Phaser.Signal();
 
-    this.createButtons([
-        {label:"Use", callback:this.onUseButtonClicked, context:this},
-        {label:"Drop", callback:this.onDropButtonClicked, context:this}
-    ]);
+    this.createControls("Item");
 };
 
 PanelPopupItem.prototype = PanelPopup.prototype;
@@ -37,6 +34,14 @@ PanelPopupItem.prototype.createItem = function() {
     label.maxWidth = this.backgroundContainer.width - 20;
     label.x = (this.backgroundContainer.width - label.width)/2;
     this.addChild(label);
+
+    let buttons = [];
+    if (this.item.data.usable) {
+        buttons.push({label:"Use", callback:this.onUseButtonClicked, context:this});
+    }
+
+    buttons.push({label:"Drop", callback:this.onDropButtonClicked, context:this});
+    this.createButtons(buttons);
 };
 
 PanelPopupItem.prototype.setItem = function(item, slot) {
@@ -54,6 +59,8 @@ PanelPopupItem.prototype.onUseButtonClicked = function(button, pointer) {
 };
 
 PanelPopupItem.prototype.onDropButtonClicked = function(button, pointer) {
+    this.onItemDropped.dispatch(this.item);
+    
     this.slot.item = null;
     this.item.destroy();
 
