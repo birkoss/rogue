@@ -1,5 +1,7 @@
 {
 	"key": {
-		"frame": 137
+		"frame": 137,
+		"name": "Golden Key",
+		"description": "Used to open door and chest"
 	}
 }

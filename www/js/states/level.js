@@ -14,6 +14,9 @@ GAME.Level.prototype.create = function() {
     this.effectsContainer = this.game.add.group();
 
     this.createPanel();
+
+    /* @TODO: Remove */
+    this.panel.addItem(this.items[0]);
 };
 
 GAME.Level.prototype.update = function() {

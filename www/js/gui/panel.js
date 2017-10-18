@@ -127,7 +127,14 @@ Panel.prototype.addItem = function(item) {
 };
 
 Panel.prototype.onInventorySlotClicked = function(slot, pointer) {
-    this.onInventorySlotSelected.dispatch(slot);
+    if (slot.item != null) {
+        this.onInventorySlotSelected.dispatch(slot);
+        var popup = new PanelPopupItem(this.game);
+        popup.setItem(slot.item, slot);
+        this.addChild(popup);
+
+        popup.show();
+    }
 };
 
 Panel.prototype.onMinimapClicked = function(minimap, pointer) {

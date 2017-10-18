@@ -14,6 +14,7 @@ GAME.Preload.prototype.preload = function() {
     this.load.spritesheet('tileset:units', 'assets/images/tilesets/units.png', 48, 48);
 
     this.load.image('helper:move', 'assets/images/helpers/move.png');
+    this.load.image('helper:back', 'assets/images/helpers/back.png');
     this.load.image('helper:attack', 'assets/images/helpers/attack.png');
 
     this.load.spritesheet('effect:attack', 'assets/images/effects/attack.png', 64, 64);
@@ -24,6 +25,8 @@ GAME.Preload.prototype.preload = function() {
 
     this.load.bitmapFont('font:guiOutline', 'assets/fonts/guiOutline.png', 'assets/fonts/guiOutline.xml');
     this.load.bitmapFont('font:gui', 'assets/fonts/gui.png', 'assets/fonts/gui.xml');
+
+    this.load.spritesheet('gui:button', 'assets/images/button.png', 100, 32);
 
     this.load.json("data:units", "assets/data/units.json");
     this.load.json("data:items", "assets/data/items.json");

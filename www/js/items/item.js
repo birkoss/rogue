@@ -8,7 +8,6 @@ function Item(game, itemID) {
 
     this.sprite = this.spriteContainer.create(0, 0, 'tileset:items');
     this.sprite.anchor.set(0.5, 0.5);
-    console.log(this.data);
     this.sprite.frame = this.data.frame;
 };
 
