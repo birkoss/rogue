@@ -272,9 +272,14 @@ GAME.Level.prototype.dropItem = function(item) {
         position = {x: unitTile.x, y:unitTile.y};
     }
 
+    /* Else, try around adjacent to the player */
+    if (position == null) {
+        console.log('@TODO: Find surronding area to drop the item');
+    }
+
+    /* Drop the item in the next free slot */
     if (position != null) {
         let tile = this.map.getTile(position.x, position.y);
-        let item = new Item(this.game, "key");
         item.x = tile.worldX + 24;
         item.y = tile.worldY + 24;
         this.itemsContainer.addChild(item);

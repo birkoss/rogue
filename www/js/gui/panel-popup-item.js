@@ -59,10 +59,11 @@ PanelPopupItem.prototype.onUseButtonClicked = function(button, pointer) {
 };
 
 PanelPopupItem.prototype.onDropButtonClicked = function(button, pointer) {
-    this.onItemDropped.dispatch(this.item);
-    
     this.slot.item = null;
-    this.item.destroy();
+
+    this.onItemDropped.dispatch(this.item);
+
+//    this.item.destroy();
 
     this.hide();
 };
