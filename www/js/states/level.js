@@ -54,7 +54,7 @@ GAME.Level.prototype.createUnits = function() {
 
     /* Create the player */
     this.unit = new Player(this.game);
-    let unitTile = this.map.getTile(6, 6);
+    let unitTile = this.map.getTile(20, 3);
     this.unit.x = unitTile.worldX + (this.unit.width/2);
     this.unit.y = unitTile.worldY + (this.unit.width/2);
     this.unit.hasMoved.add(this.unitHaveMoved, this);
@@ -76,6 +76,7 @@ GAME.Level.prototype.createUnits = function() {
                 enemy.hasMoved.add(this.unitHaveMoved, this);
                 enemy.x = tile.worldX + (enemy.width/2);
                 enemy.y = tile.worldY + (enemy.height/2);
+
                 this.unitsContainer.addChild(enemy);
                 this.units.push(enemy);
             }
@@ -310,6 +311,9 @@ GAME.Level.prototype.startTurn = function() {
                     let ny = unitTile.y + y;
                     
                     let tile = this.map.getTile(nx, ny);
+                    if (tile == null) {
+                        continue;
+                    }
                     let distance = Math.abs(Math.abs(x) - Math.abs(y));
 
                     if (tiles[ (ny * this.map.width) + nx] == 0) {
@@ -326,16 +330,18 @@ GAME.Level.prototype.startTurn = function() {
                     } else {
                         if (distance <= unit.range) {
                             this.units.forEach(single_unit => {
-                                let unitTile = this.map.getTileWorldXY(single_unit.x, single_unit.y);
-                                if (unitTile.x == tile.x && unitTile.y == tile.y) {
-                                    let sprite = this.helpersContainer.create(tile.worldX, tile.worldY, 'helper:attack');
-                                    sprite.tint = 0xff0000;
-                                    sprite.inputEnabled = true;
-                                    sprite.events.onInputUp.add(function() {
-                                        this.unit.fatigue(5);
-                                        this.helpersContainer.removeAll(true);
-                                        this.attackUnit(this.unit, single_unit);
-                                    }, this);
+                                if (single_unit.type != unit.type) {
+                                    let unitTile = this.map.getTileWorldXY(single_unit.x, single_unit.y);
+                                    if (unitTile.x == tile.x && unitTile.y == tile.y) {
+                                        let sprite = this.helpersContainer.create(tile.worldX, tile.worldY, 'helper:attack');
+                                        sprite.tint = 0xff0000;
+                                        sprite.inputEnabled = true;
+                                        sprite.events.onInputUp.add(function() {
+                                            this.unit.fatigue(5);
+                                            this.helpersContainer.removeAll(true);
+                                            this.attackUnit(this.unit, single_unit);
+                                        }, this);
+                                    }
                                 }
                             });
                         }
