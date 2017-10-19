@@ -58,7 +58,7 @@ GAME.Level.prototype.createUnits = function() {
     this.unit.x = unitTile.worldX + (this.unit.width/2);
     this.unit.y = unitTile.worldY + (this.unit.width/2);
     this.unit.hasMoved.add(this.unitHaveMoved, this);
-    this.unit.isHurt.add(this.unitIsMoved, this);
+    this.unit.isHurt.add(this.unitIsHurt, this);
     this.unit.isHungry.add(this.unitIsHungry, this);
     this.game.camera.follow(this.unit);
 
