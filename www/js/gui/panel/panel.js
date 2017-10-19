@@ -101,7 +101,7 @@ Panel.prototype.createInventory = function() {
     }
 };
 
-Panel.prototype.updateUnit = function(unit) {
+Panel.prototype.updateUnit = function(unit, stat, amount) {
     this.stats['hunger']['text'].text = unit.hunger + ' / ' + unit.maxHunger;
     this.stats['hunger']['progress'].width = Math.floor(unit.hunger / unit.maxHunger * 100);
 

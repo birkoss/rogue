@@ -4,6 +4,8 @@ function Player(game) {
     this.fillRateATB = 20;
 
     this.hunger = this.maxHunger = 100;
+
+    this.isHungry = new Phaser.Signal();
 };
 
 Player.prototype = Unit.prototype;
@@ -16,4 +18,6 @@ Player.prototype.eat = function(amount) {
 
 Player.prototype.fatigue = function(amount) {
 	this.hunger = Math.max(0, this.hunger - amount);
+
+	this.isHungry.dispatch(this. amount);
 }

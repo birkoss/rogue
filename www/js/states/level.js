@@ -30,9 +30,6 @@ GAME.Level.prototype.update = function() {
     if (this.currentUnit == null) {
         this.updateATB();
     }
-    if (this.unit != null) {
-        this.panel.updateUnit(this.unit);
-    }
 };
 
 /* Creation */
@@ -61,6 +58,8 @@ GAME.Level.prototype.createUnits = function() {
     this.unit.x = unitTile.worldX + (this.unit.width/2);
     this.unit.y = unitTile.worldY + (this.unit.width/2);
     this.unit.hasMoved.add(this.unitHaveMoved, this);
+    this.unit.isHurt.add(this.unitIsMoved, this);
+    this.unit.isHungry.add(this.unitIsHungry, this);
     this.game.camera.follow(this.unit);
 
     this.unitsContainer.addChild(this.unit);
@@ -480,4 +479,12 @@ GAME.Level.prototype.unitHaveMoved = function(unit) {
         });
     }
     this.endTurn();
+};
+
+GAME.Level.prototype.unitIsHungry = function(unit, amount) {
+    this.panel.updateUnit(this.unit, "hunger", amount);
+};
+
+GAME.Level.prototype.unitIsHurt = function(unit, amount) {
+    this.panel.updateUnit(this.unit, "health", amount);
 };

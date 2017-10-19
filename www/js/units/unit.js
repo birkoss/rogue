@@ -19,6 +19,7 @@ function Unit(game, type, unitID) {
     this.sprite.animations.play('idle');
 
     this.hasMoved = new Phaser.Signal();
+    this.isHurt = new Phaser.Signal();
 
     this.clearATB();
 };
@@ -81,6 +82,8 @@ Unit.prototype.takeDamage = function(damage) {
         sprite.frame = this.game.rnd.integerInRange(94, 99);
         sprite.anchor.set(0.5, 0.5);
     }
+
+    this.isHurt.dispatch(this, damage);
 };
 
 /* ATB */
