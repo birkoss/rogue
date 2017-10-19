@@ -317,6 +317,7 @@ GAME.Level.prototype.startTurn = function() {
                             sprite.tint = 0x00ff00;
                             sprite.inputEnabled = true;
                             sprite.events.onInputUp.add(function() {
+                                this.unit.fatigue(1);
                                 this.helpersContainer.removeAll(true);
                                 this.moveUnit(this.unit, nx, ny);
                             }, this);
@@ -330,6 +331,7 @@ GAME.Level.prototype.startTurn = function() {
                                     sprite.tint = 0xff0000;
                                     sprite.inputEnabled = true;
                                     sprite.events.onInputUp.add(function() {
+                                        this.unit.fatigue(5);
                                         this.helpersContainer.removeAll(true);
                                         this.attackUnit(this.unit, single_unit);
                                     }, this);
@@ -348,6 +350,7 @@ GAME.Level.prototype.startTurn = function() {
                                         sprite.tint = 0xff0000;
                                         sprite.inputEnabled = true;
                                         sprite.events.onInputUp.add(function() {
+                                            this.unit.fatigue(1);
                                             this.helpersContainer.removeAll(true);
                                             let openDoor  = this.map.getTile(1, 1, 1);
                                             this.map.putTile(openDoor, nx, ny, 1);
@@ -361,6 +364,7 @@ GAME.Level.prototype.startTurn = function() {
                                         sprite.tint = 0x00ff00;
                                         sprite.inputEnabled = true;
                                         sprite.events.onInputUp.add(function() {
+                                            this.unit.fatigue(5);
                                             this.helpersContainer.removeAll(true);
                                             this.moveUnit(this.unit, nx, ny);
                                         }, this);

@@ -13,3 +13,7 @@ Player.prototype.eat = function(amount) {
     this.hunger += amount;
     this.maxHunger += amount;
 }
+
+Player.prototype.fatigue = function(amount) {
+	this.hunger = Math.max(0, this.hunger - amount);
+}
