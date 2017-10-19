@@ -1,7 +1,5 @@
 /*
 	@TODO:
-		- Configure the object in the JSON
-		- Add the different enemies in the map JSON (new propertie: ID)
 		- Decrease the hunger every 5 actions
 			- Flash the progress bar everytime it lose 1 value
 		- Flash the health progress bar everytime the player is damaged

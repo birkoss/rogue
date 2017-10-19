@@ -9,7 +9,7 @@
 		"health": 2
 	},
 	"ghost": {
-		"frames": [4, 22],
+		"frames": [294, 312],
 		"health": 1,
 		"range": 1
 	}

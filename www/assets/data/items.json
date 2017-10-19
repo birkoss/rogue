@@ -22,13 +22,5 @@
 		"effects": [
 			{"type":"hunger", "amount": 20}
 		]
-	},
-	"stair": {
-		"frame": 12,
-		"name": "Stair",
-		"pickable": false,
-		"triggers": [
-			{"type":"level"}
-		]
 	}
 }
