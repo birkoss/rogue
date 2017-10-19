@@ -19,5 +19,5 @@ Player.prototype.eat = function(amount) {
 Player.prototype.fatigue = function(amount) {
 	this.hunger = Math.max(0, this.hunger - amount);
 
-	this.isHungry.dispatch(this. amount);
+	this.isHungry.dispatch(this, -amount);
 }

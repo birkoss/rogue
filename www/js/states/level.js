@@ -230,9 +230,11 @@ GAME.Level.prototype.useItem = function(item) {
             switch (single_effect.type) {
                 case "health":
                     this.currentUnit.heal(single_effect.amount);
+                    this.panel.updateUnit(this.currentUnit, "health", single_effect.amount);
                     break;
                 case "hunger":
                     this.currentUnit.eat(single_effect.amount);
+                    this.panel.updateUnit(this.currentUnit, "hunger", single_effect.amount);
                     break;
             }
         });
@@ -406,6 +408,7 @@ GAME.Level.prototype.startTurn = function() {
 };
 
 GAME.Level.prototype.endTurn = function() {
+    this.panel.updateMap(this.map, this.itemsContainer, this.units);
     this.helpersContainer.removeAll(true);
     this.currentUnit.clearATB();
     this.currentUnit = null;

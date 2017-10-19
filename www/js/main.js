@@ -3,7 +3,7 @@
 		- Flash the progress bar everytime it lose 1 value
 		- Flash the health progress bar everytime the player is damaged
 
-		- Regenerate the minimap
+		- Allow the door to be unlocked only when a key is in the inventory
 
 		- Detect if the player is dead (from health or hunger)
 			- Show a popup with a restart

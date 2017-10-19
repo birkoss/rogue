@@ -83,7 +83,7 @@ Unit.prototype.takeDamage = function(damage) {
         sprite.anchor.set(0.5, 0.5);
     }
 
-    this.isHurt.dispatch(this, damage);
+    this.isHurt.dispatch(this, -damage);
 };
 
 /* ATB */
