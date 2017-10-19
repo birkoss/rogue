@@ -46,7 +46,6 @@ GAME.Level.prototype.createMap = function() {
     this.layers = {};
     this.layers.floor = this.map.createLayer(0);
     this.layers.walls = this.map.createLayer(1);
-    this.layers.doors = this.map.createLayer(4);
 
     this.layers.floor.resizeWorld();
 };
@@ -58,7 +57,7 @@ GAME.Level.prototype.createUnits = function() {
 
     /* Create the player */
     this.unit = new Player(this.game);
-    let unitTile = this.map.getTile(9, 6);
+    let unitTile = this.map.getTile(6, 6);
     this.unit.x = unitTile.worldX + (this.unit.width/2);
     this.unit.y = unitTile.worldY + (this.unit.width/2);
     this.unit.hasMoved.add(this.unitHaveMoved, this);
@@ -68,22 +67,21 @@ GAME.Level.prototype.createUnits = function() {
     this.units.push(this.unit);
 
     /* Create the enemies based on the 3rd layer */
-    let tiles = this.game.cache.getTilemapData('level:1').data.layers[3].data;
+    let tiles = this.map.layers[3].data;
 
-    tiles.forEach((single_tile, index) => {
-        if (single_tile > 0) {
-            let y = Math.floor(index / this.map.width);
-            let x = index - (y * this.map.width);
-
-            let tile = this.map.getTile(x, y);
-            let enemy = new Enemy(this.game, "ghost");
-            enemy.hasMoved.add(this.unitHaveMoved, this);
-            enemy.x = tile.worldX + (enemy.width/2);
-            enemy.y = tile.worldY + (enemy.height/2);
-            this.unitsContainer.addChild(enemy);
-            this.units.push(enemy);
+    for (let y=0; y<tiles.length; y++) {        
+        for (let x=0; x<tiles[y].length; x++) {
+            if (tiles[y][x].index > 0) {
+                let tile = this.map.getTile(x, y);
+                let enemy = new Enemy(this.game, "ghost");
+                enemy.hasMoved.add(this.unitHaveMoved, this);
+                enemy.x = tile.worldX + (enemy.width/2);
+                enemy.y = tile.worldY + (enemy.height/2);
+                this.unitsContainer.addChild(enemy);
+                this.units.push(enemy);
+            }
         }
-    });
+    }
 };
 
 GAME.Level.prototype.createItems = function() {
@@ -337,6 +335,38 @@ GAME.Level.prototype.startTurn = function() {
                                     }, this);
                                 }
                             });
+                        }
+
+                        if (distance == 1) {
+                            /* Check if near a locked door */
+                            let doorTile = this.map.getTile(nx, ny, 1);
+                            if (doorTile != null) {
+                                if (doorTile.properties.type != null && doorTile.properties.type == "door") {
+                                    if (doorTile.properties.state == "locked") {
+                                        let sprite = this.helpersContainer.create(tile.worldX + 8, tile.worldY + 8, "tileset:items");
+                                        sprite.frame = 137;
+                                        sprite.tint = 0xff0000;
+                                        sprite.inputEnabled = true;
+                                        sprite.events.onInputUp.add(function() {
+                                            this.helpersContainer.removeAll(true);
+                                            let openDoor  = this.map.getTile(1, 1, 1);
+                                            this.map.putTile(openDoor, nx, ny, 1);
+
+                                            console.log("@TODO: Remove a key");
+
+                                            this.endTurn();
+                                        }, this);
+                                    } else {
+                                        let sprite = this.helpersContainer.create(tile.worldX, tile.worldY, 'helper:move');
+                                        sprite.tint = 0x00ff00;
+                                        sprite.inputEnabled = true;
+                                        sprite.events.onInputUp.add(function() {
+                                            this.helpersContainer.removeAll(true);
+                                            this.moveUnit(this.unit, nx, ny);
+                                        }, this);
+                                    }
+                                }
+                            }
                         }
                     }
                 }
