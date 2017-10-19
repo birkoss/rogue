@@ -150,15 +150,6 @@ Panel.prototype.updateMap = function(map, items, units) {
     this.minimapContainer.y = this.minimap.y + (this.minimap.height - this.minimapContainer.height) / 2;
 };
 
-Panel.prototype.drawTile = function(x, y, color) {
-    // create a group 
-    let myGraphic = game.add.graphics(0,0); // create graphic
-    myGraphic.beginFill(0x00FFFF, 1); // paint graphic a colour
-    myGraphic.boundsPadding = 0;
-    myGraphic.drawRect(0, 0, 100, 100); // draw graphic to screen 
-    this.minimapContainer.add(myGraphic); // add graphic to group 
-}
-
 Panel.prototype.addItem = function(item) {
     let emptySlot = null;
     this.inventory.forEach(single_slot => {

@@ -18,6 +18,8 @@ GAME.Level.prototype.create = function() {
 
     this.createPanel();
 
+    this.panel.updateUnit(this.unit);
+
     /* @TODO: Remove */
     /*
     this.panel.addItem(this.itemsContainer.getChildAt(0));
@@ -414,10 +416,14 @@ GAME.Level.prototype.startTurn = function() {
 };
 
 GAME.Level.prototype.endTurn = function() {
-    this.panel.updateMap(this.map, this.itemsContainer, this.units);
     this.helpersContainer.removeAll(true);
     this.currentUnit.clearATB();
-    this.currentUnit = null;
+
+    if (this.unit.isAlive()) {
+        this.currentUnit = null;
+    } else {
+        var popup = new Popup(this.game);
+    }
 };
 
 /* ATB */

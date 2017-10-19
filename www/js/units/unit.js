@@ -42,8 +42,8 @@ Unit.prototype.face = function(direction) {
 };
 
 Unit.prototype.heal = function(amount) {
-    this.health += amount;
-    this.maxHealth += amount;
+    this.health = Math.min(this.health + amount, this.maxHealth);
+    this.isHurt.dispatch(this, -damage);
 }
 
 Unit.prototype.isAlive = function() {
