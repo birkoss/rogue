@@ -1,5 +1,9 @@
 /*
 	@TODO:
+		- Remove the minimap in the panel
+			- Replace with :
+				- Button equipment
+				- Button map
 		- Fix the sprite of skeleton and wooden sword!
 		- Allow the player to equip weapons
 
