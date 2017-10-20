@@ -28,6 +28,7 @@
 		"name": "Wooden Sword",
 		"description": "You are a king amonst mice",
 		"equipable": true,
+		"slot": "lerf-arm",
 		"effects": [
 			{"type":"damage", "amount": 1}
 		]
