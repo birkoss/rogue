@@ -294,6 +294,10 @@ GAME.Level.prototype.dropItem = function(item) {
     this.endTurn();
 };
 
+GAME.Level.prototype.restartGame = function() {
+    this.game.state.restart();
+};
+
 /* Turns */
 
 GAME.Level.prototype.startTurn = function() {
@@ -422,7 +426,9 @@ GAME.Level.prototype.endTurn = function() {
     if (this.unit.isAlive()) {
         this.currentUnit = null;
     } else {
-        var popup = new Popup(this.game);
+        let popup = new Popup(this.game, "You are dead!");
+        popup.addButton("Restart", this.restartGame, this);
+        popup.show();
     }
 };
 

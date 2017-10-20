@@ -3,7 +3,7 @@ function Player(game) {
 
     this.fillRateATB = 20;
 
-    this.hunger = this.maxHunger = 1;
+    this.hunger = this.maxHunger = 100;
 
     this.isHungry = new Phaser.Signal();
 };
