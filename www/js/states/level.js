@@ -74,7 +74,7 @@ GAME.Level.prototype.createUnits = function() {
         for (let x=0; x<tiles[y].length; x++) {
             if (tiles[y][x].index > 0) {
                 let tile = this.map.getTile(x, y);
-                let enemy = new Enemy(this.game, "ghost");
+                let enemy = new Enemy(this.game, this.getRandomObject(GAME.json['units']));
                 enemy.hasMoved.add(this.unitHaveMoved, this);
                 enemy.x = tile.worldX + (enemy.width/2);
                 enemy.y = tile.worldY + (enemy.height/2);
@@ -98,7 +98,7 @@ GAME.Level.prototype.createItems = function() {
             let x = index - (y * this.map.width);
 
             let tile = this.map.getTile(x, y);
-            let item = new Item(this.game, "apple");
+            let item = new Item(this.game, this.getRandomObject(GAME.json['items']));
             item.x = tile.worldX + 24;
             item.y = tile.worldY + 24;
             this.itemsContainer.addChild(item);
@@ -149,6 +149,11 @@ GAME.Level.prototype.getTiles = function(excludedType) {
 };
 
 /* Actions */
+
+GAME.Level.prototype.getRandomObject = function(obj) {
+    var keys = Object.keys(obj)
+    return keys[ keys.length * Math.random() << 0];
+};
 
 GAME.Level.prototype.moveUnit = function(unit, x, y) {
     let tile = this.map.getTile(x, y);
@@ -390,7 +395,6 @@ GAME.Level.prototype.startTurn = function() {
             }
         }
     } else if (unit.type == Unit.Type.Enemy) {
-
         let unitTile = this.getUnitPosition(unit);
         let playerTile = this.getUnitPosition(this.unit);
 

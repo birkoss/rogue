@@ -1,5 +1,4 @@
 function Unit(game, type, unitID) {
-
     Phaser.Group.call(this, game);
 
     this.type = type;
@@ -44,7 +43,7 @@ Unit.prototype.face = function(direction) {
 Unit.prototype.heal = function(amount) {
     this.health = Math.min(this.health + amount, this.maxHealth);
     this.isHurt.dispatch(this, -damage);
-}
+};
 
 Unit.prototype.isAlive = function() {
     return this.health > 0;
@@ -52,7 +51,7 @@ Unit.prototype.isAlive = function() {
 
 Unit.prototype.setHealth = function(newHealth) {
     this.health = this.maxHealth = newHealth;
-}
+};
 
 /* Move a unit to a specified position: NXxNY */
 Unit.prototype.move = function(nx, ny) {

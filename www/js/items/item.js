@@ -1,4 +1,7 @@
 function Item(game, itemID) {
+
+    console.log(itemID);
+
     Phaser.Group.call(this, game);
 
     this.data = GAME.json['items'][itemID];

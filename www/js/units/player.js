@@ -21,6 +21,6 @@ Player.prototype.fatigue = function(amount) {
 	this.isHungry.dispatch(this, -amount);
 }
 
-Player.prototype.isAlive = function() {
+Player.isAlive = function() {
     return this.health > 0 && this.hunger > 0;
 };
