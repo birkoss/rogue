@@ -26,6 +26,9 @@ GAME.Level.prototype.create = function() {
     this.panel.addItem(this.itemsContainer.getChildAt(1));
     this.panel.addItem(this.itemsContainer.getChildAt(2));
     */
+
+    let table = new Table();
+    console.log(table.generate("items"));
 };
 
 GAME.Level.prototype.update = function() {
@@ -70,11 +73,13 @@ GAME.Level.prototype.createUnits = function() {
     /* Create the enemies based on the 3rd layer */
     let tiles = this.map.layers[3].data;
 
+    let enemies = new Table();
+
     for (let y=0; y<tiles.length; y++) {        
         for (let x=0; x<tiles[y].length; x++) {
             if (tiles[y][x].index > 0) {
                 let tile = this.map.getTile(x, y);
-                let enemy = new Enemy(this.game, this.getRandomObject(GAME.json['units']));
+                let enemy = new Enemy(this.game, enemies.generate("enemies"));
                 enemy.hasMoved.add(this.unitHaveMoved, this);
                 enemy.x = tile.worldX + (enemy.width/2);
                 enemy.y = tile.worldY + (enemy.height/2);
@@ -92,13 +97,15 @@ GAME.Level.prototype.createItems = function() {
     /* Create the enemies based on the 3rd layer */
     let tiles = this.game.cache.getTilemapData('level:1').data.layers[2].data;
 
+    let loot = new Table();
+
     tiles.forEach((single_tile, index) => {
         if (single_tile > 0) {
             let y = Math.floor(index / this.map.width);
             let x = index - (y * this.map.width);
 
             let tile = this.map.getTile(x, y);
-            let item = new Item(this.game, this.getRandomObject(GAME.json['items']));
+            let item = new Item(this.game, loot.generate("items"));
             item.x = tile.worldX + 24;
             item.y = tile.worldY + 24;
             this.itemsContainer.addChild(item);

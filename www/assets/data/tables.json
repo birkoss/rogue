@@ -1,0 +1,35 @@
+{
+	"items": [
+		{"table":"foods", "weight":50},
+		{"table":"potions", "weight":20},
+		{"table":"weapons", "weight":10}
+	],
+	"foods": [
+		{"id":"apple", "weight":100}
+	],
+	"potions": [
+		{"id":"potion", "weight":100}
+	],
+	"weapons": [
+		{"table":"swords", "weight":50}
+	],
+	"swords": [
+		{"id":"wooden_sword", "weight":100}
+	],
+
+
+	"enemies": [
+		{"table":"animals", "weight":50},
+		{"table":"skeletons", "weight":30},
+		{"table":"ghosts", "weight":10}
+	],
+	"animals": [
+		{"id":"rat", "weight":100}
+	],
+	"skeletons": [
+		{"id":"skeleton", "weight":100}
+	],
+	"ghosts": [
+		{"id":"ghost", "weight":100}
+	]
+}

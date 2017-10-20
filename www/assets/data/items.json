@@ -22,5 +22,14 @@
 		"effects": [
 			{"type":"hunger", "amount": 20}
 		]
+	},
+	"wooden_sword": {
+		"frame": 250,
+		"name": "Wooden Sword",
+		"description": "You are a king amonst mice",
+		"equipable": true,
+		"effects": [
+			{"type":"damage", "amount": 1}
+		]
 	}
 }

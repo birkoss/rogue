@@ -1,5 +1,8 @@
 /*
 	@TODO:
+		- Fix the sprite of skeleton and wooden sword!
+		- Allow the player to equip weapons
+
 		- Flash the progress bar everytime it lose 1 value
 		- Flash the health progress bar everytime the player is damaged
 

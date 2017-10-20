@@ -10,7 +10,10 @@
 	},
 	"ghost": {
 		"frames": [294, 312],
-		"health": 1,
-		"range": 1
+		"health": 1
+	},
+	"skeleton": {
+		"frames": [200, 100],
+		"health": 3
 	}
 }

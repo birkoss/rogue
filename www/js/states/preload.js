@@ -29,6 +29,7 @@ GAME.Preload.prototype.preload = function() {
 
     this.load.json("data:units", "assets/data/units.json");
     this.load.json("data:items", "assets/data/items.json");
+    this.load.json("data:tables", "assets/data/tables.json");
 
     this.load.image('tile:blank', 'assets/images/blank.png');
 };
@@ -37,6 +38,7 @@ GAME.Preload.prototype.create = function() {
     GAME.json = {};
     GAME.json['units'] = this.cache.getJSON("data:units");
     GAME.json['items'] = this.cache.getJSON("data:items");
+    GAME.json['tables'] = this.cache.getJSON("data:tables");
 
     this.state.start("Level");
 };
