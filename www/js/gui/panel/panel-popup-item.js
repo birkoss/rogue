@@ -3,6 +3,7 @@ function PanelPopupItem(game) {
 
     this.onItemDropped = new Phaser.Signal();
     this.onItemUsed = new Phaser.Signal();
+    this.onItemEquipped = new Phaser.Signal();
 
     this.createControls("Item");
 };
@@ -41,6 +42,10 @@ PanelPopupItem.prototype.createItem = function() {
         buttons.push({label:"Use", callback:this.onUseButtonClicked, context:this});
     }
 
+    //if (this.item.data.equipable) {
+        buttons.push({label:"Equip", callback:this.onEquipButtonClicked, context:this});
+    //}
+
     buttons.push({label:"Drop", callback:this.onDropButtonClicked, context:this});
     this.createButtons(buttons);
 };
@@ -59,6 +64,10 @@ PanelPopupItem.prototype.onUseButtonClicked = function(button, pointer) {
     this.item.destroy();
 
     this.hide();
+};
+
+PanelPopupItem.prototype.onEquipButtonClicked = function(button, pointer) {
+    this.onItemEquipped.dispatch(this.item);
 };
 
 PanelPopupItem.prototype.onDropButtonClicked = function(button, pointer) {

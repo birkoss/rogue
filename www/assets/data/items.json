@@ -32,5 +32,16 @@
 		"effects": [
 			{"type":"damage", "amount": 1}
 		]
+	},
+	"steel_sword": {
+		"frame": 250,
+		"name": "Steel Sword",
+		"description": "This sword is a steal!",
+		"equipable": true,
+		"slot": "lerf-arm",
+		"effects": [
+			{"type":"damage", "amount": 2}
+		]
 	}
+
 }

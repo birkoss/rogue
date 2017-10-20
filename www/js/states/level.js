@@ -21,11 +21,9 @@ GAME.Level.prototype.create = function() {
     this.panel.updateUnit(this.unit);
 
     /* @TODO: Remove */
-    /*
     this.panel.addItem(this.itemsContainer.getChildAt(0));
     this.panel.addItem(this.itemsContainer.getChildAt(1));
     this.panel.addItem(this.itemsContainer.getChildAt(2));
-    */
 
     let table = new Table();
     console.log(table.generate("items"));
@@ -474,6 +472,7 @@ GAME.Level.prototype.onPanelInventorySlotClicked = function(slot) {
     var popup = new PanelPopupItem(this.game);
     popup.onItemDropped.add(this.dropItem, this);
     popup.onItemUsed.add(this.useItem, this);
+    popup.onItemEquipped.add(this.onPanelInventoryItemEquipClicked, this);
     popup.hasActionTaken.add(function() {
         this.endTurn();
     }, this);
@@ -481,6 +480,11 @@ GAME.Level.prototype.onPanelInventorySlotClicked = function(slot) {
     this.panel.addChild(popup);
 
     popup.show();
+};
+
+GAME.Level.prototype.onPanelInventoryItemEquipClicked = function(item) {
+    console.log("OUI");
+    console.log(item);
 };
 
 GAME.Level.prototype.onPanelMinimapClicked = function(minimap) {
