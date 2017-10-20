@@ -59,13 +59,14 @@ GAME.Level.prototype.createUnits = function() {
 
     /* Create the player */
     this.unit = new Player(this.game);
-    let unitTile = this.map.getTile(20, 3);
+    let unitTile = this.map.getTile(32, 3);
     this.unit.x = unitTile.worldX + (this.unit.width/2);
     this.unit.y = unitTile.worldY + (this.unit.width/2);
     this.unit.hasMoved.add(this.unitHaveMoved, this);
     this.unit.isHurt.add(this.unitIsHurt, this);
     this.unit.isHungry.add(this.unitIsHungry, this);
-    this.game.camera.follow(this.unit);
+    this.unit.offsetX = 72;
+    this.game.camera.follow(this.unit);//, null, 96);
 
     this.unitsContainer.addChild(this.unit);
     this.units.push(this.unit);

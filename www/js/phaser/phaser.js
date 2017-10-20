@@ -27509,6 +27509,10 @@ Phaser.Camera.prototype = {
         this._targetPosition.x = this.view.x + this.target.worldPosition.x;
         this._targetPosition.y = this.view.y + this.target.worldPosition.y;
 
+        if (this.target.offsetX != null) {
+            this._targetPosition.x -= this.target.offsetX;
+        }
+
         if (this.deadzone)
         {
             this._edge = this._targetPosition.x - this.view.x;
