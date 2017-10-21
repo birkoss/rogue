@@ -28,7 +28,7 @@
 var GAME = GAME || {};
 
 GAME.equipment = {
-	head: "potion",
+	head: null,
 	body: null,
 	jewel: null,
 	armor: null,

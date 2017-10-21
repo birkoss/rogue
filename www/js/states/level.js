@@ -27,9 +27,6 @@ GAME.Level.prototype.create = function() {
     this.panel.addItem(this.itemsContainer.getChildAt(1));
     this.panel.addItem(this.itemsContainer.getChildAt(2));
     */
-
-    let table = new Table();
-    console.log(table.generate("items"));
 };
 
 GAME.Level.prototype.update = function() {
@@ -158,6 +155,18 @@ GAME.Level.prototype.getTiles = function(excludedType) {
 };
 
 /* Actions */
+
+GAME.Level.prototype.showInventory = function() {
+    var popup = new PanelPopupEquipment(this.game);
+    popup.onEquipmentSlotSelected.add(this.onPanelSlotClicked, this);
+    popup.hasActionTaken.add(function() {
+        //this.endTurn();
+    }, this);
+    //popup.setItem(slot.item, slot);
+
+    this.panel.addPopup(popup);
+    popup.show();
+};
 
 GAME.Level.prototype.getRandomObject = function(obj) {
     var keys = Object.keys(obj)
@@ -317,6 +326,11 @@ GAME.Level.prototype.dropItem = function(itemID, origin) {
             GAME.inventory.splice(index, 1);
             this.panel.updateInventory();
         }
+    } else {
+        let data = GAME.json["items"][itemID];
+        GAME.equipment[data.slot] = null;
+        let index = this.panel.popupContainer.children.length;
+        this.panel.popupContainer.getChildAt(index-1).updateEquipment();
     }
 
     this.endTurn();
@@ -492,6 +506,7 @@ GAME.Level.prototype.onPanelSlotClicked = function(slot, origin) {
     popup.onItemDropped.add(this.dropItem, this);
     popup.onItemUsed.add(this.useItem, this);
     popup.onItemEquipped.add(this.onPanelInventoryItemEquipClicked, this);
+    popup.onItemUnequipped.add(this.onPanelInventoryItemUnequipClicked, this);
     popup.hasActionTaken.add(function() {
         this.endTurn();
     }, this);
@@ -501,30 +516,41 @@ GAME.Level.prototype.onPanelSlotClicked = function(slot, origin) {
     popup.show();
 };
 
-GAME.Level.prototype.onPanelInventoryItemEquipClicked = function(item) {
-    let slot = item.data.slot;
-    if (slot == null) {
-        slot = "head";
-    }
-    if (GAME.equipment[slot] == null) {
-        GAME.equipment[slot] = item.itemID;
-    }
+GAME.Level.prototype.onPanelInventoryItemEquipClicked = function(itemID) {
+    let data = GAME.json["items"][itemID];
 
-    console.log(GAME.equipment);
-    console.log("OUI");
-    console.log(item.data);
+    if (GAME.equipment[data.slot] == null) {
+        GAME.equipment[data.slot] = itemID;
+
+        let index = GAME.inventory.indexOf(itemID);
+        if (index >= 0) {
+            GAME.inventory.splice(index, 1);
+            this.panel.updateInventory();
+        }
+
+        this.showInventory();
+
+    } else {
+        alert("@TODO: Better handling when the inventory is already used");
+    }
+};
+
+GAME.Level.prototype.onPanelInventoryItemUnequipClicked = function(itemID) {
+    if (GAME.inventory.length < 4) {
+        GAME.inventory.push(itemID);
+        let data = GAME.json["items"][itemID];
+        GAME.equipment[data.slot] = null;
+
+        let index = this.panel.popupContainer.children.length;
+        this.panel.popupContainer.getChildAt(index-1).updateEquipment();
+        this.panel.updateInventory();
+    } else {
+        alert("@TODO: Better handling when the inventory is full");
+    }
 };
 
 GAME.Level.prototype.onPanelMinimapClicked = function(minimap) {
-    var popup = new PanelPopupEquipment(this.game);
-    popup.onEquipmentSlotSelected.add(this.onPanelSlotClicked, this);
-    popup.hasActionTaken.add(function() {
-        //this.endTurn();
-    }, this);
-    //popup.setItem(slot.item, slot);
-    
-    this.panel.addPopup(popup);
-    popup.show();
+    this.showInventory();
 };
 
 GAME.Level.prototype.unitHaveMoved = function(unit) {

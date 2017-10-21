@@ -9,6 +9,7 @@ function PanelPopupItem(game, origin) {
     this.onItemDropped = new Phaser.Signal();
     this.onItemUsed = new Phaser.Signal();
     this.onItemEquipped = new Phaser.Signal();
+    this.onItemUnequipped = new Phaser.Signal();
 
     this.createControls("Item");
 
@@ -47,7 +48,7 @@ PanelPopupItem.prototype.setItem = function(itemID) {
             buttons.push({label:"Equip", callback:this.onEquipButtonClicked, context:this});
         //}
     } else {
-        buttons.push({label:"Unequip", callback:this.onEquipButtonClicked, context:this});
+        buttons.push({label:"Unequip", callback:this.onUnequipButtonClicked, context:this});
     }
     buttons.push({label:"Drop", callback:this.onDropButtonClicked, context:this});
     this.createButtons(buttons);
@@ -60,6 +61,12 @@ PanelPopupItem.prototype.onUseButtonClicked = function(button, pointer) {
 
 PanelPopupItem.prototype.onEquipButtonClicked = function(button, pointer) {
     this.onItemEquipped.dispatch(this.slot.item.itemID);
+    this.hide();
+};
+
+PanelPopupItem.prototype.onUnequipButtonClicked = function(button, pointer) {
+    this.onItemUnequipped.dispatch(this.slot.item.itemID);
+    this.hide();
 };
 
 PanelPopupItem.prototype.onDropButtonClicked = function(button, pointer) {

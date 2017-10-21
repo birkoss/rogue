@@ -29,6 +29,7 @@ PanelPopupEquipment.prototype.createSlots = function() {
         let x = i - (y * 2);
 
         let slot = new Slot(this.game);
+        slot.slotID = slots[i].slot;
         slot.onSlotClicked.add(this.onSlotClicked, this);
 
         slot.x = x * (slot.width + 18);
@@ -48,6 +49,18 @@ PanelPopupEquipment.prototype.createSlots = function() {
     this.slotsContainer.y = this.controls.height + 50;
     this.slotsContainer.x = (this.backgroundContainer.width - this.slotsContainer.width) / 2;
 };
+
+PanelPopupEquipment.prototype.updateEquipment = function() {
+    this.slotsContainer.forEach(single_slot => {
+        if (single_slot.slotID) {
+            if (GAME.equipment[single_slot.slotID] == null) {
+                single_slot.clear();
+            } else {
+                single_slot.addItem(GAME.inventory[single_slot.slotID]);
+            }
+        }
+    });
+}
 
 
 PanelPopupEquipment.prototype.onSlotClicked = function(slot) {
