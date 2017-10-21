@@ -26,7 +26,7 @@ PanelPopup.prototype.createControls = function(newLabel) {
     this.controls.height = 26;
     this.controls.tint = 0x000000;
 
-    let label = this.game.add.bitmapText(0, 2, "font:gui", newLabel, 20);
+    let label = this.game.add.bitmapText(0, 8, "font:gui", newLabel, 10);
     label.tint = 0xffffff;
     label.x = (this.backgroundContainer.width - label.width)/2;
     this.addChild(label);

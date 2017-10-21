@@ -28,7 +28,7 @@
 		"name": "Wooden Sword",
 		"description": "You are a king amonst mice",
 		"equipable": true,
-		"slot": "lerf-arm",
+		"slot": "hand",
 		"effects": [
 			{"type":"damage", "amount": 1}
 		]
@@ -38,7 +38,7 @@
 		"name": "Steel Sword",
 		"description": "This sword is a steal!",
 		"equipable": true,
-		"slot": "lerf-arm",
+		"slot": "hand",
 		"effects": [
 			{"type":"damage", "amount": 2}
 		]

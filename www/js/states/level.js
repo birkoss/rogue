@@ -21,9 +21,12 @@ GAME.Level.prototype.create = function() {
     this.panel.updateUnit(this.unit);
 
     /* @TODO: Remove */
+    this.panel.addItem("wooden_sword");
+    /*  
     this.panel.addItem(this.itemsContainer.getChildAt(0));
     this.panel.addItem(this.itemsContainer.getChildAt(1));
     this.panel.addItem(this.itemsContainer.getChildAt(2));
+    */
 
     let table = new Table();
     console.log(table.generate("items"));
@@ -57,7 +60,7 @@ GAME.Level.prototype.createUnits = function() {
 
     /* Create the player */
     this.unit = new Player(this.game);
-    let unitTile = this.map.getTile(32, 3);
+    let unitTile = this.map.getTile(30, 3);
     this.unit.x = unitTile.worldX + (this.unit.width/2);
     this.unit.y = unitTile.worldY + (this.unit.width/2);
     this.unit.hasMoved.add(this.unitHaveMoved, this);
@@ -114,7 +117,7 @@ GAME.Level.prototype.createItems = function() {
 
 GAME.Level.prototype.createPanel = function() {
     this.panel = new Panel(this.game);
-    this.panel.onInventorySlotSelected.add(this.onPanelInventorySlotClicked, this);
+    this.panel.onInventorySlotSelected.add(this.onPanelSlotClicked, this);
     this.panel.onMinimapSelected.add(this.onPanelMinimapClicked, this);
     this.panel.x = this.game.width - this.panel.width;
     this.panel.fixedToCamera = true;
@@ -237,10 +240,18 @@ GAME.Level.prototype.applyDamage = function(unit, amount) {
     }
 };
 
-GAME.Level.prototype.useItem = function(item) {
-    if (item != null && item.data.effects != null) {
-        item.data.identified = true;
-        item.data.effects.forEach(single_effect => {
+GAME.Level.prototype.useItem = function(itemID) {
+    let index = GAME.inventory.indexOf(itemID);
+    if (index >= 0) {
+        GAME.inventory.splice(index, 1);
+        this.panel.updateInventory();
+    }
+
+    let data = GAME.json['items'][itemID];
+
+    if (data != null && data.effects != null) {
+        data.identified = true;
+        data.effects.forEach(single_effect => {
             switch (single_effect.type) {
                 case "health":
                     this.currentUnit.heal(single_effect.amount);
@@ -257,7 +268,7 @@ GAME.Level.prototype.useItem = function(item) {
     this.endTurn();
 };
 
-GAME.Level.prototype.dropItem = function(item) {
+GAME.Level.prototype.dropItem = function(itemID, origin) {
     let position = null;
     let unitTile = this.getUnitPosition(this.unit);
 
@@ -293,13 +304,19 @@ GAME.Level.prototype.dropItem = function(item) {
 
     /* Drop the item in the next free slot */
     if (position != null) {
+        let item = new Item(this.game, itemID);
         let tile = this.map.getTile(position.x, position.y);
         item.x = tile.worldX + 24;
         item.y = tile.worldY + 24;
         this.itemsContainer.addChild(item);
-    } else {
-        /* If we can't find a spot for the item, destroy it... */
-        item.destroy();
+    }
+
+    if (origin == "inventory") {
+        let index = GAME.inventory.indexOf(itemID);
+        if (index >= 0) {
+            GAME.inventory.splice(index, 1);
+            this.panel.updateInventory();
+        }
     }
 
     this.endTurn();
@@ -468,27 +485,46 @@ GAME.Level.prototype.updateATB = function() {
 
 /* Events */
 
-GAME.Level.prototype.onPanelInventorySlotClicked = function(slot) {
-    var popup = new PanelPopupItem(this.game);
+GAME.Level.prototype.onPanelSlotClicked = function(slot, origin) {
+    var popup = new PanelPopupItem(this.game, origin);
+    popup.setItem(slot.item.itemID);
+    
     popup.onItemDropped.add(this.dropItem, this);
     popup.onItemUsed.add(this.useItem, this);
     popup.onItemEquipped.add(this.onPanelInventoryItemEquipClicked, this);
     popup.hasActionTaken.add(function() {
         this.endTurn();
     }, this);
-    popup.setItem(slot.item, slot);
+
     this.panel.addChild(popup);
 
     popup.show();
 };
 
 GAME.Level.prototype.onPanelInventoryItemEquipClicked = function(item) {
+    let slot = item.data.slot;
+    if (slot == null) {
+        slot = "head";
+    }
+    if (GAME.equipment[slot] == null) {
+        GAME.equipment[slot] = item.itemID;
+    }
+
+    console.log(GAME.equipment);
     console.log("OUI");
-    console.log(item);
+    console.log(item.data);
 };
 
 GAME.Level.prototype.onPanelMinimapClicked = function(minimap) {
-
+    var popup = new PanelPopupEquipment(this.game);
+    popup.onEquipmentSlotSelected.add(this.onPanelSlotClicked, this);
+    popup.hasActionTaken.add(function() {
+        //this.endTurn();
+    }, this);
+    //popup.setItem(slot.item, slot);
+    
+    this.panel.addPopup(popup);
+    popup.show();
 };
 
 GAME.Level.prototype.unitHaveMoved = function(unit) {
@@ -500,7 +536,9 @@ GAME.Level.prototype.unitHaveMoved = function(unit) {
             /* If possible, add the item under the player in the panel */
             if (unitTile.x == itemTile.x && unitTile.y == itemTile.y) {
                 if (single_item.data.pickable == null || single_item.data.pickable) {
-                    this.panel.addItem(single_item);
+                    this.panel.addItem(single_item.itemID);
+                    this.itemsContainer.remove(single_item);
+                    single_item.destroy();
                 } else {
                     if (single_item.data.triggers != null) {
                         single_item.data.triggers.forEach(single_trigger => {

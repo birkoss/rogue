@@ -6,6 +6,9 @@ function Panel(game) {
     this.createStats();
     this.createInventory();
 
+    this.popupContainer = this.game.add.group();
+    this.add(this.popupContainer);
+
     this.onInventorySlotSelected = new Phaser.Signal();
     this.onMinimapSelected = new Phaser.Signal();
 };
@@ -78,25 +81,29 @@ Panel.prototype.createStats = function() {
 };
 
 Panel.prototype.createInventory = function() {
+    this.inventoryContainer = this.game.add.group();
+    this.add(this.inventoryContainer);
+
     let padding = 16;
 
-    this.inventory = [];
-
+    let index = 0;
     for (let y=0; y<2; y++) {
         for (let x=0; x<2; x++) {
-            let tile = this.backgroundContainer.create(0, 0, "tile:blank");
-            tile.width = tile.height = 48;
+            let slot = new Slot(this.game);
+            slot.onSlotClicked.add(this.onInventorySlotClicked, this);
 
-            tile.x = (x == 0 ? padding : this.backgroundContainer.width - tile.width - padding);
-            tile.y = this.backgroundContainer.height - tile.height - padding;
+            slot.x = (x == 0 ? padding : this.backgroundContainer.width - slot.width - padding);
+            slot.y = this.backgroundContainer.height - slot.height - padding;
             if (y == 0 ) {
-                tile.y -= tile.height + padding;
+                slot.y -= slot.height + padding;
             }
 
-            tile.inputEnabled = true;
-            tile.events.onInputUp.add(this.onInventorySlotClicked, this);
+            if (index < GAME.inventory.length) {
+               slot.addItem(GAME.inventory[index]);
+            }
+            index++;
 
-            this.inventory.push(tile);
+            this.inventoryContainer.addChild(slot);
         }
     }
 };
@@ -150,29 +157,40 @@ Panel.prototype.updateMap = function(map, items, units) {
     this.minimapContainer.y = this.minimap.y + (this.minimap.height - this.minimapContainer.height) / 2;
 };
 
+Panel.prototype.updateInventory = function() {
+    for (let i=0; i<this.inventoryContainer.children.length; i++) {
+        this.inventoryContainer.getChildAt(i).clear();
+        if (i < GAME.inventory.length) {
+            this.inventoryContainer.getChildAt(i).addItem(GAME.inventory[i]);
+        }
+    }   
+};
+
 Panel.prototype.addItem = function(item) {
     let emptySlot = null;
-    this.inventory.forEach(single_slot => {
+    this.inventoryContainer.forEach(single_slot => {
         if (emptySlot == null && single_slot.item == null) {
             emptySlot = single_slot;
         }
     });
 
     if (emptySlot != null) {
-        this.addChild(item);
-        emptySlot.item = item;
-        item.x = emptySlot.x + emptySlot.width/2;
-        item.y = emptySlot.y + emptySlot.height/2;
-
+        //emptySlot.addItem(item);
+        GAME.inventory.push(item);
+        this.updateInventory();
         return true;
     }
 
     return false;
 };
 
+Panel.prototype.addPopup = function(popup) {
+    this.popupContainer.addChild(popup);
+}
+
 Panel.prototype.onInventorySlotClicked = function(slot, pointer) {
     if (slot.item != null) {        
-        this.onInventorySlotSelected.dispatch(slot);
+        this.onInventorySlotSelected.dispatch(slot, "inventory");
     }
 };
 

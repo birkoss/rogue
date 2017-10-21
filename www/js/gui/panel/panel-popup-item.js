@@ -1,4 +1,9 @@
-function PanelPopupItem(game) {
+function PanelPopupItem(game, origin) {
+    console.log("PanelPopupItem: ", origin);
+    this.origin = origin;
+    if (this.origin == null) {
+        this.origin = "equipment";
+    }
     PanelPopup.call(this, game);
 
     this.onItemDropped = new Phaser.Signal();
@@ -6,74 +11,58 @@ function PanelPopupItem(game) {
     this.onItemEquipped = new Phaser.Signal();
 
     this.createControls("Item");
+
+    this.itemContainer = this.game.add.group();
+    this.add(this.itemContainer);
+
+    this.slot = new Slot(this.game);
+    this.slot.x = (this.backgroundContainer.width - this.slot.width) / 2;
+    this.slot.y = this.controls.height + 100;
+    this.itemContainer.addChild(this.slot);
 };
 
 PanelPopupItem.prototype = PanelPopup.prototype;
 PanelPopupItem.prototype.constructor = PanelPopup;
 
-PanelPopupItem.prototype.createItem = function() {
-    let background = this.backgroundContainer.create(0, 0, "tile:blank");
-    background.width = 64;
-    background.height = 64;
-    background.tint = 0xffffff;
+PanelPopupItem.prototype.setItem = function(itemID) {
+    this.slot.addItem(itemID);
 
-    background.x = (this.backgroundContainer.width - background.width) / 2;
-    background.y = this.controls.height;
-
-    let sprite = this.backgroundContainer.create(0, 0, "tileset:items");
-    sprite.anchor.set(0.5, 0.5);
-    sprite.frame = this.item.data.frame;
-    sprite.x = background.x + background.width/2;
-    sprite.y = background.y + background.height/2;
-
-    let label = this.game.add.bitmapText(0, background.y + background.height + 10, "font:gui", this.item.data.name, 10);
+    let label = this.game.add.bitmapText(0, this.slot.y + this.slot.height + 10, "font:gui", this.slot.item.data.name, 10);
     label.tint = 0xffffff;
     label.x = (this.backgroundContainer.width - label.width)/2;
     this.addChild(label);
 
-    label = this.game.add.bitmapText(0, label.y + label.height + 10, "font:gui", (this.item.data.identified != false ? this.item.data.description : "I wonder what this does..."), 10);
+    label = this.game.add.bitmapText(0, label.y + label.height + 10, "font:gui", (this.slot.item.data.identified != false ? this.slot.item.data.description : "I wonder what this does..."), 10);
     label.tint = 0xffffff;
     label.maxWidth = this.backgroundContainer.width - 20;
     label.x = (this.backgroundContainer.width - label.width)/2;
     this.addChild(label);
 
     let buttons = [];
-    if (this.item.data.usable) {
-        buttons.push({label:"Use", callback:this.onUseButtonClicked, context:this});
+    if (this.origin == "inventory") {
+        if (this.slot.item.data.usable) {
+            buttons.push({label:"Use", callback:this.onUseButtonClicked, context:this});
+        }
+        //if (this.slot.item.data.equipable) {
+            buttons.push({label:"Equip", callback:this.onEquipButtonClicked, context:this});
+        //}
+    } else {
+        buttons.push({label:"Unequip", callback:this.onEquipButtonClicked, context:this});
     }
-
-    //if (this.item.data.equipable) {
-        buttons.push({label:"Equip", callback:this.onEquipButtonClicked, context:this});
-    //}
-
     buttons.push({label:"Drop", callback:this.onDropButtonClicked, context:this});
     this.createButtons(buttons);
 };
 
-PanelPopupItem.prototype.setItem = function(item, slot) {
-    this.item = item;
-    this.slot = slot;
-
-    this.createItem();
-};
-
 PanelPopupItem.prototype.onUseButtonClicked = function(button, pointer) {
-    this.slot.item = null;
-
-    this.onItemUsed.dispatch(this.item);
-    this.item.destroy();
-
+    this.onItemUsed.dispatch(this.slot.item.itemID);
     this.hide();
 };
 
 PanelPopupItem.prototype.onEquipButtonClicked = function(button, pointer) {
-    this.onItemEquipped.dispatch(this.item);
+    this.onItemEquipped.dispatch(this.slot.item.itemID);
 };
 
 PanelPopupItem.prototype.onDropButtonClicked = function(button, pointer) {
-    this.slot.item = null;
-
-    this.onItemDropped.dispatch(this.item);
-
+    this.onItemDropped.dispatch(this.slot.item.itemID, this.origin);
     this.hide();
 };

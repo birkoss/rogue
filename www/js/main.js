@@ -27,6 +27,16 @@
 
 var GAME = GAME || {};
 
+GAME.equipment = {
+	head: "potion",
+	body: null,
+	jewel: null,
+	armor: null,
+	hand: null,
+	foot: null
+};
+GAME.inventory = ["potion", "apple"];
+
 GAME.config = {};
 GAME.config.scale = 2;
 GAME.config.spriteSize = 24;
