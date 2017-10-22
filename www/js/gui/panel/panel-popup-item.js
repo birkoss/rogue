@@ -47,10 +47,13 @@ PanelPopupItem.prototype.setItem = function(itemID) {
         //if (this.slot.item.data.equipable) {
             buttons.push({label:"Equip", callback:this.onEquipButtonClicked, context:this});
         //}
+        buttons.push({label:"Drop", callback:this.onDropButtonClicked, context:this});
+    } else if (this.origin == "compare") {
+        buttons.push({label:"Change", callback:this.onDropButtonClicked, context:this});
     } else {
         buttons.push({label:"Unequip", callback:this.onUnequipButtonClicked, context:this});
+        buttons.push({label:"Drop", callback:this.onDropButtonClicked, context:this});
     }
-    buttons.push({label:"Drop", callback:this.onDropButtonClicked, context:this});
     this.createButtons(buttons);
 };
 

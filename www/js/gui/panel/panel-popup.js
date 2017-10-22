@@ -20,20 +20,25 @@ PanelPopup.prototype.createBackground = function() {
     background.tint = 0x333333;
 };
 
-PanelPopup.prototype.createControls = function(newLabel) {
-    this.controls = this.backgroundContainer.create(0, 0, "tile:blank");
+PanelPopup.prototype.createControls = function(newLabel, newY) {
+    if (newY == null) {
+        newY = 0;
+    }
+    this.controls = this.backgroundContainer.create(0, newY, "tile:blank");
     this.controls.width = this.backgroundContainer.width;
     this.controls.height = 26;
     this.controls.tint = 0x000000;
 
-    let label = this.game.add.bitmapText(0, 8, "font:gui", newLabel, 10);
+    let label = this.game.add.bitmapText(0, newY+8, "font:gui", newLabel, 10);
     label.tint = 0xffffff;
     label.x = (this.backgroundContainer.width - label.width)/2;
     this.addChild(label);
 
-    let sprite = this.backgroundContainer.create(2, 2, "helper:back");
-    sprite.inputEnabled = true;
-    sprite.events.onInputUp.add(this.onBackButtonClicked, this);
+    if (newY == 0) {
+        let sprite = this.backgroundContainer.create(2, 2, "helper:back");
+        sprite.inputEnabled = true;
+        sprite.events.onInputUp.add(this.onBackButtonClicked, this);
+    }
 };
 
 PanelPopup.prototype.createButtons = function(buttons) {
@@ -58,9 +63,12 @@ PanelPopup.prototype.createButtons = function(buttons) {
     this.buttonsContainer.y = this.game.height - this.buttonsContainer.height - 10;
 };
 
-PanelPopup.prototype.show = function() {
+PanelPopup.prototype.show = function(newX) {
+    if (newX == null) {
+        newX = 0;
+    }
     this.x = -this.width;
-    let tween = this.game.add.tween(this).to({x:0}, 200, Phaser.Easing.Linear.None);
+    let tween = this.game.add.tween(this).to({x:newX}, 200, Phaser.Easing.Linear.None);
     tween.start();
 };
 

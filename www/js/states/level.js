@@ -533,7 +533,16 @@ GAME.Level.prototype.onPanelInventoryItemEquipClicked = function(itemID) {
         this.showInventory();
 
     } else {
-        alert("@TODO: Better handling when the inventory is already used");
+        var popup = new PanelPopupCompare(this.game);
+        popup.setItems(itemID, GAME.equipment[data.slot]);
+        popup.onEquipmentChangeSelected.add(this.onPanelChangeEquipment, this);
+        popup.hasActionTaken.add(function() {
+            //this.endTurn();
+        }, this);
+        //popup.setItem(slot.item, slot);
+
+        this.panel.addPopup(popup);
+        popup.show();
     }
 };
 
@@ -554,6 +563,24 @@ GAME.Level.prototype.onPanelInventoryItemUnequipClicked = function(itemID) {
         alert("@TODO: Better handling when the inventory is full");
     }
 };
+
+GAME.Level.prototype.onPanelChangeEquipment = function(itemID) {
+    /* @TODO: Merge with the normal equip, only add the previousEquipment */
+    let data = GAME.json["items"][itemID];
+
+    let previousEquipment = GAME.equipment[data.slot];
+
+    GAME.equipment[data.slot] = itemID;
+
+    let index = GAME.inventory.indexOf(itemID);
+    if (index >= 0) {
+        GAME.inventory.splice(index, 1);
+        GAME.inventory.push(previousEquipment);
+        this.panel.updateInventory();
+        this.panel.closePopup();
+        this.panel.closePopup();
+    }
+}
 
 GAME.Level.prototype.onPanelMinimapClicked = function(minimap) {
     this.showInventory();
