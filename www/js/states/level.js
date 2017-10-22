@@ -327,7 +327,7 @@ GAME.Level.prototype.dropItem = function(itemID, origin) {
         let data = GAME.json["items"][itemID];
         GAME.equipment[data.slot] = null;
         let index = this.panel.popupContainer.children.length;
-        this.panel.popupContainer.getChildAt(index-1).updateEquipment();
+        this.panel.popupContainer.getChildAt(index-2).updateEquipment();
     }
 
     this.endTurn();

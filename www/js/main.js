@@ -5,7 +5,8 @@
 				- Button equipment
 				- Button map
 
-		- Verify that each actions using the panel takes 1 turn
+		- Review all Popup's management
+			- Use IDs instead of trying to guess the index they used
 
 		- Remove the limit of size (4) of the inventory hardcoded everywhere, and use a variable instead
 

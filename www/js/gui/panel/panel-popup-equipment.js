@@ -51,7 +51,7 @@ PanelPopupEquipment.prototype.createSlots = function() {
 };
 
 PanelPopupEquipment.prototype.updateEquipment = function() {
-    console.log("UPDATE EQUIPMENT");
+    console.log("UPDATE EQUIPMENT", this);
     this.slotsContainer.forEach(single_slot => {
         if (single_slot.slotID) {
             if (GAME.equipment[single_slot.slotID] == null) {
