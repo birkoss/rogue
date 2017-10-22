@@ -511,7 +511,7 @@ GAME.Level.prototype.onPanelSlotClicked = function(slot, origin) {
         this.endTurn();
     }, this);
 
-    this.panel.addChild(popup);
+    this.panel.addPopup(popup);
 
     popup.show();
 };
@@ -528,6 +528,8 @@ GAME.Level.prototype.onPanelInventoryItemEquipClicked = function(itemID) {
             this.panel.updateInventory();
         }
 
+        this.panel.closePopup();
+
         this.showInventory();
 
     } else {
@@ -541,9 +543,13 @@ GAME.Level.prototype.onPanelInventoryItemUnequipClicked = function(itemID) {
         let data = GAME.json["items"][itemID];
         GAME.equipment[data.slot] = null;
 
+        this.panel.closePopup();
+
         let index = this.panel.popupContainer.children.length;
         this.panel.popupContainer.getChildAt(index-1).updateEquipment();
         this.panel.updateInventory();
+
+
     } else {
         alert("@TODO: Better handling when the inventory is full");
     }

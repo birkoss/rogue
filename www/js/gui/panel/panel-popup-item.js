@@ -61,12 +61,10 @@ PanelPopupItem.prototype.onUseButtonClicked = function(button, pointer) {
 
 PanelPopupItem.prototype.onEquipButtonClicked = function(button, pointer) {
     this.onItemEquipped.dispatch(this.slot.item.itemID);
-    this.hide();
 };
 
 PanelPopupItem.prototype.onUnequipButtonClicked = function(button, pointer) {
     this.onItemUnequipped.dispatch(this.slot.item.itemID);
-    this.hide();
 };
 
 PanelPopupItem.prototype.onDropButtonClicked = function(button, pointer) {

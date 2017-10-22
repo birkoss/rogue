@@ -32,7 +32,7 @@ GAME.equipment = {
 	body: null,
 	jewel: null,
 	armor: null,
-	hand: null,
+	hand: "steel_sword",
 	foot: null
 };
 GAME.inventory = ["potion", "apple"];

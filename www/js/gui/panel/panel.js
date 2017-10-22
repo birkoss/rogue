@@ -188,6 +188,14 @@ Panel.prototype.addPopup = function(popup) {
     this.popupContainer.addChild(popup);
 }
 
+Panel.prototype.closePopup = function() {
+    let index = this.popupContainer.children.length - 1;
+
+    let popup = this.popupContainer.getChildAt(index);
+    this.popupContainer.removeChildAt(index);
+    popup.destroy();
+}
+
 Panel.prototype.onInventorySlotClicked = function(slot, pointer) {
     if (slot.item != null) {        
         this.onInventorySlotSelected.dispatch(slot, "inventory");

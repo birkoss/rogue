@@ -24,7 +24,7 @@
 		]
 	},
 	"wooden_sword": {
-		"frame": 250,
+		"frame": 151,
 		"name": "Wooden Sword",
 		"description": "You are a king amonst mice",
 		"equipable": true,
@@ -34,7 +34,7 @@
 		]
 	},
 	"steel_sword": {
-		"frame": 250,
+		"frame": 198,
 		"name": "Steel Sword",
 		"description": "This sword is a steal!",
 		"equipable": true,
