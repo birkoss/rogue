@@ -4,7 +4,6 @@
 			- Replace with :
 				- Button equipment
 				- Button map
-		- Fix the sprite of skeleton and wooden sword!
 		- Allow the player to equip weapons
 
 		- Remove the limit of size (4) of the inventory hardcoded everywhere, and use a variable instead
