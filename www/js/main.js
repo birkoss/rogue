@@ -7,6 +7,8 @@
 		- Fix the sprite of skeleton and wooden sword!
 		- Allow the player to equip weapons
 
+		- Remove the limit of size (4) of the inventory hardcoded everywhere, and use a variable instead
+
 		- Flash the progress bar everytime it lose 1 value
 		- Flash the health progress bar everytime the player is damaged
 
@@ -35,7 +37,7 @@ GAME.equipment = {
 	hand: "steel_sword",
 	foot: null
 };
-GAME.inventory = ["potion", "apple"];
+GAME.inventory = ["potion", "apple", "potion"];
 
 GAME.config = {};
 GAME.config.scale = 2;

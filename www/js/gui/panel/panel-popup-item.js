@@ -18,7 +18,7 @@ function PanelPopupItem(game, origin) {
 
     this.slot = new Slot(this.game);
     this.slot.x = (this.backgroundContainer.width - this.slot.width) / 2;
-    this.slot.y = this.controls.height + 100;
+    this.slot.y = this.controls.height + 10;
     this.itemContainer.addChild(this.slot);
 };
 
@@ -51,7 +51,15 @@ PanelPopupItem.prototype.setItem = function(itemID) {
     } else if (this.origin == "compare") {
         buttons.push({label:"Change", callback:this.onDropButtonClicked, context:this});
     } else {
-        buttons.push({label:"Unequip", callback:this.onUnequipButtonClicked, context:this});
+        if (GAME.inventory.length < 4) {
+            buttons.push({label:"Unequip", callback:this.onUnequipButtonClicked, context:this});
+        } else {
+            label = this.game.add.bitmapText(0, label.y + label.height + 30, "font:gui", "You cannot unequip this item, your inventory is full!", 10);
+            label.tint = 0xff0000;
+            label.maxWidth = this.backgroundContainer.width - 20;
+            label.x = (this.backgroundContainer.width - label.width)/2;
+            this.addChild(label);
+        }
         buttons.push({label:"Drop", callback:this.onDropButtonClicked, context:this});
     }
     this.createButtons(buttons);
