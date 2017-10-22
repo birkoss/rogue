@@ -160,10 +160,6 @@ GAME.Level.prototype.getTiles = function(excludedType) {
 GAME.Level.prototype.showInventory = function() {
     var popup = new PanelPopupEquipment(this.game);
     popup.onEquipmentSlotSelected.add(this.onPanelSlotClicked, this);
-    popup.hasActionTaken.add(function() {
-        //this.endTurn();
-    }, this);
-    //popup.setItem(slot.item, slot);
 
     this.panel.addPopup(popup);
     popup.show();
@@ -344,9 +340,6 @@ GAME.Level.prototype.restartGame = function() {
 /* Turns */
 
 GAME.Level.prototype.startTurn = function() {
-    // @TODO: Must find a way to make this works without slowing the gameplay
-    //this.panel.updateMap(this.map, this.itemsContainer, this.units);
-
     let unit = this.currentUnit;
 
     if (unit.type == Unit.Type.Player) {
@@ -462,6 +455,7 @@ GAME.Level.prototype.startTurn = function() {
 };
 
 GAME.Level.prototype.endTurn = function() {
+    console.log("endTurn");
     this.helpersContainer.removeAll(true);
     this.currentUnit.clearATB();
 
@@ -533,6 +527,8 @@ GAME.Level.prototype.onPanelInventoryItemEquipClicked = function(itemID) {
 
         this.showInventory();
 
+        this.endTurn();
+
     } else {
         var popup = new PanelPopupCompare(this.game);
         popup.setItems(itemID, GAME.equipment[data.slot]);
@@ -558,6 +554,8 @@ GAME.Level.prototype.onPanelInventoryItemUnequipClicked = function(itemID) {
         let index = this.panel.popupContainer.children.length;
         this.panel.popupContainer.getChildAt(index-1).updateEquipment();
         this.panel.updateInventory();
+
+        this.endTurn();
     }
 };
 
@@ -577,6 +575,8 @@ GAME.Level.prototype.onPanelChangeEquipment = function(itemID) {
         this.panel.closePopup();
         this.panel.closePopup();
     }
+
+    this.endTurn();
 }
 
 GAME.Level.prototype.onPanelEquipmentClicked = function() {

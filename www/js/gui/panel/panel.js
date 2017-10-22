@@ -129,47 +129,6 @@ Panel.prototype.updateUnit = function(unit, stat, amount) {
     this.stats['health']['progress'].width = Math.floor(unit.health / unit.maxHealth * 100);
 };
 
-Panel.prototype.updateMap = function(map, items, units) {
-    let size = 2;                                       // Size of each tile
-    let padding = 3;                                    // Remove the first X rows
-    if (this.minimapContainer.children.length == 0 ) {
-        let mapGraphics = this.game.add.graphics(0, 0);
-        mapGraphics.beginFill(0x000000, 1);
-        for (let y=0; y<map.height; y++) {
-            for (let x=padding; x<map.width; x++) {
-                if (map.layers[1].data[y][x].index != -1) {
-                    mapGraphics.drawRect((x-padding)*size, y*size, size, size);
-                }
-            }
-        }
-        this.minimapContainer.addChild(mapGraphics);
-        console.log(mapGraphics.width);
-    }
-
-    for (let i=this.minimapContainer.children.length-1; i>=1; i--) {
-        this.minimapContainer.removeChildAt(i);
-    }
-
-    let g = this.game.add.graphics(0, 0);
-
-    g.beginFill(0xffff00);
-    items.forEach(single_item => {
-        let itemTile = map.getTileWorldXY(single_item.x, single_item.y);
-        g.drawRect((itemTile.x-padding)*size, itemTile.y*size, size, size);
-    });
-
-    units.forEach(single_unit => {
-        let unitTile = map.getTileWorldXY(single_unit.x, single_unit.y);
-        g.beginFill(single_unit.Type == Unit.Type.Player ? 0x00ff00 : 0xff0000);
-        g.drawRect((unitTile.x-padding)*size, unitTile.y*size, size, size);
-    });
-
-    this.minimapContainer.addChild(g);
-
-    this.minimapContainer.x = this.minimap.x + ((this.minimap.width - this.minimapContainer.width) / 2);
-    this.minimapContainer.y = this.minimap.y + (this.minimap.height - this.minimapContainer.height) / 2;
-};
-
 Panel.prototype.updateInventory = function() {
     for (let i=0; i<this.inventoryContainer.children.length; i++) {
         this.inventoryContainer.getChildAt(i).clear();

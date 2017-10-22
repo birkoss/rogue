@@ -42,7 +42,27 @@ PanelPopup.prototype.createControls = function(newLabel, newY) {
     }
 };
 
+PanelPopup.prototype.createButtons = function(buttons) {
+    this.buttonsContainer = this.game.add.group();
+    this.addChild(this.buttonsContainer);
 
+    let startY = 0;
+    buttons.forEach(single_button => {
+        let button = this.game.add.button(0, startY, "gui:button", single_button.callback, single_button.context, 0, 1, 0, 1);
+        this.buttonsContainer.addChild(button);
+
+        let label = this.game.add.bitmapText(0, 2, "font:gui", single_button.label, 10);
+        label.tint = 0xffffff;
+        label.x = (button.width - label.width)/2;
+        label.y = (button.height - label.height)/2;
+        button.addChild(label);
+
+        startY += button.height + 10;
+    });
+
+    this.buttonsContainer.x = (this.backgroundContainer.width - this.buttonsContainer.width) / 2;
+    this.buttonsContainer.y = this.game.height - this.buttonsContainer.height - 10;
+};
 
 PanelPopup.prototype.show = function(newX) {
     if (newX == null) {
