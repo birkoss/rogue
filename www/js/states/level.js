@@ -57,7 +57,7 @@ GAME.Level.prototype.createUnits = function() {
 
     /* Create the player */
     this.unit = new Player(this.game);
-    let unitTile = this.map.getTile(30, 3);
+    let unitTile = this.map.getTile(4, 7);
     this.unit.x = unitTile.worldX + (this.unit.width/2);
     this.unit.y = unitTile.worldY + (this.unit.width/2);
     this.unit.hasMoved.add(this.unitHaveMoved, this);
@@ -557,10 +557,6 @@ GAME.Level.prototype.onPanelInventoryItemUnequipClicked = function(itemID) {
         let index = this.panel.popupContainer.children.length;
         this.panel.popupContainer.getChildAt(index-1).updateEquipment();
         this.panel.updateInventory();
-
-
-    } else {
-        alert("@TODO: Better handling when the inventory is full");
     }
 };
 
@@ -595,9 +591,10 @@ GAME.Level.prototype.unitHaveMoved = function(unit) {
             /* If possible, add the item under the player in the panel */
             if (unitTile.x == itemTile.x && unitTile.y == itemTile.y) {
                 if (single_item.data.pickable == null || single_item.data.pickable) {
-                    this.panel.addItem(single_item.itemID);
-                    this.itemsContainer.remove(single_item);
-                    single_item.destroy();
+                    if (this.panel.addItem(single_item.itemID)) {
+                        this.itemsContainer.remove(single_item);
+                        single_item.destroy();
+                    }
                 } else {
                     if (single_item.data.triggers != null) {
                         single_item.data.triggers.forEach(single_trigger => {
