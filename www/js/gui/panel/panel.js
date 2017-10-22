@@ -2,7 +2,10 @@ function Panel(game) {
     Phaser.Group.call(this, game);
 
     this.createBackground();
-    this.createMinimap();
+
+    this.createButtons([{label:'Equipment', callback:this.onButtonEquipmentClicked, context:this}, {label:'Map', callback:this.onButtonMinimapClicked, context:this}]);
+    this.buttonsContainer.y = 10;
+
     this.createStats();
     this.createInventory();
 
@@ -10,6 +13,7 @@ function Panel(game) {
     this.add(this.popupContainer);
 
     this.onInventorySlotSelected = new Phaser.Signal();
+    this.onEquipmentSelected = new Phaser.Signal();
     this.onMinimapSelected = new Phaser.Signal();
 };
 
@@ -26,21 +30,8 @@ Panel.prototype.createBackground = function() {
     background.tint = 0x333333;
 };
 
-Panel.prototype.createMinimap = function() {
-    this.minimap = this.backgroundContainer.create(0, 0, "tile:blank");
-    this.minimap.width = this.minimap.height = 100;
-    this.minimap.x = this.minimap.y = (this.backgroundContainer.width - this.minimap.width) / 2;
-    this.minimap.tint = 0xffffff;
-
-    this.minimap.inputEnabled = true;
-    this.minimap.events.onInputUp.add(this.onMinimapClicked, this);
-
-    this.minimapContainer = this.game.add.group();
-    this.addChild(this.minimapContainer);
-};
-
 Panel.prototype.createStats = function() {
-    let startY = (this.minimap.y) + this.minimap.height + 10;
+    let startY = (this.buttonsContainer.y) + this.buttonsContainer.height + 10;
 
     let texts = ["Health", "Hunger"];
 
@@ -78,6 +69,28 @@ Panel.prototype.createStats = function() {
     });
 
     console.log(this.stats);
+};
+
+Panel.prototype.createButtons = function(buttons) {
+    this.buttonsContainer = this.game.add.group();
+    this.addChild(this.buttonsContainer);
+
+    let startY = 0;
+    buttons.forEach(single_button => {
+        let button = this.game.add.button(0, startY, "gui:button", single_button.callback, single_button.context, 0, 1, 0, 1);
+        this.buttonsContainer.addChild(button);
+
+        let label = this.game.add.bitmapText(0, 2, "font:gui", single_button.label, 10);
+        label.tint = 0xffffff;
+        label.x = (button.width - label.width)/2;
+        label.y = (button.height - label.height)/2;
+        button.addChild(label);
+
+        startY += button.height + 10;
+    });
+
+    this.buttonsContainer.x = (this.backgroundContainer.width - this.buttonsContainer.width) / 2;
+    this.buttonsContainer.y = this.game.height - this.buttonsContainer.height - 10;
 };
 
 Panel.prototype.createInventory = function() {
@@ -202,6 +215,11 @@ Panel.prototype.onInventorySlotClicked = function(slot, pointer) {
     }
 };
 
-Panel.prototype.onMinimapClicked = function(minimap, pointer) {
-    this.onMinimapSelected.dispatch(this.minimap);
+Panel.prototype.onButtonEquipmentClicked = function(button, pointer) {
+    this.onEquipmentSelected.dispatch();
+}
+
+Panel.prototype.onButtonMinimapClicked = function(button, pointer) {
+    console.log("..");
+    this.onMinimapSelected.dispatch();
 }

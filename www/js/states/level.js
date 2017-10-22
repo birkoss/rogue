@@ -115,6 +115,7 @@ GAME.Level.prototype.createItems = function() {
 GAME.Level.prototype.createPanel = function() {
     this.panel = new Panel(this.game);
     this.panel.onInventorySlotSelected.add(this.onPanelSlotClicked, this);
+    this.panel.onEquipmentSelected.add(this.onPanelEquipmentClicked, this);
     this.panel.onMinimapSelected.add(this.onPanelMinimapClicked, this);
     this.panel.x = this.game.width - this.panel.width;
     this.panel.fixedToCamera = true;
@@ -578,8 +579,18 @@ GAME.Level.prototype.onPanelChangeEquipment = function(itemID) {
     }
 }
 
-GAME.Level.prototype.onPanelMinimapClicked = function(minimap) {
+GAME.Level.prototype.onPanelEquipmentClicked = function() {
     this.showInventory();
+};
+
+GAME.Level.prototype.onPanelMinimapClicked = function() {
+    var popup = new PanelPopupMinimap(this.game);
+    popup.hasActionTaken.add(function() {
+        //this.endTurn();
+    }, this);
+    popup.createMap(this.map, this.units, this.itemsContainer);
+    this.panel.addPopup(popup);
+    popup.show();
 };
 
 GAME.Level.prototype.unitHaveMoved = function(unit) {

@@ -4,7 +4,8 @@
 			- Replace with :
 				- Button equipment
 				- Button map
-		- Allow the player to equip weapons
+
+		- Verify that each actions using the panel takes 1 turn
 
 		- Remove the limit of size (4) of the inventory hardcoded everywhere, and use a variable instead
 
