@@ -19,6 +19,7 @@ GAME.Level.prototype.create = function() {
     this.layers.fow = this.map.createLayer(4);
     this.layers.fow.alpha = 0.8;
 
+
     this.createPanel();
 
     this.panel.updateUnit(this.unit);
@@ -60,7 +61,7 @@ GAME.Level.prototype.createUnits = function() {
 
     /* Create the player */
     this.unit = new Player(this.game);
-    let unitTile = this.map.getTile(4, 7);
+    let unitTile = this.map.getTile(4, 6);
     this.unit.x = unitTile.worldX + (this.unit.width/2);
     this.unit.y = unitTile.worldY + (this.unit.width/2);
     this.unit.hasMoved.add(this.unitHaveMoved, this);
@@ -171,13 +172,47 @@ GAME.Level.prototype.reveal = function(x1, y1) {
 
 line = new Phaser.Line();
 
+console.log(originTile.worldX + "x...x" + originTile.worldY);
+               let destinationTile = this.map.getTile(x1, y1-2);
+               console.log(destinationTile.worldX + "x...x" + destinationTile.worldY);
+                    line.start.set(originTile.worldX, originTile.worldY);
+                 line.end.set(destinationTile.worldX, destinationTile.worldY);
 
-    for (let y=-1; y<=1; y++) {
-        for (let x=-1; x<=1; x++) {
+var gfx = this.game.add.graphics(0, 0);
+ gfx.lineStyle(1, 0xffd900, 1);
+
+ 
+
+       
+
+    for (let y=-3; y<=3; y++) {
+        for (let x=-3; x<=3; x++) {
             let nx = x + x1;
             let ny = y + y1;
-            this.map.putTile(emptyTile, nx, ny, 4);
-          
+            let ok = true;
+
+            if (Math.abs(x) > 1 || Math.abs(y) > 1) {
+                
+                console.log(x + "x" + y);
+                let destinationTile = this.map.getTile(nx, ny);
+                    line.start.set(originTile.worldX + 24, originTile.worldY + 24);
+                 line.end.set(destinationTile.worldX + 24, destinationTile.worldY + 24);
+
+
+gfx.moveTo(line.start.x, line.start.y);
+gfx.lineTo(line.end.x, line.end.y);
+
+                 this.game.debug.geom(line);
+                 this.layers.walls.getRayCastTiles(line).forEach(single_tile => {
+                    if (single_tile.index > -1) {
+                        ok = false;
+                    }
+                 });
+            }
+
+            if (ok) {
+                this.map.putTile(emptyTile, nx, ny, 4);
+            }          
         }
     }
 
