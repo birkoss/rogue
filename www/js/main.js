@@ -1,10 +1,5 @@
 /*
 	@TODO:
-		- Remove the minimap in the panel
-			- Replace with :
-				- Button equipment
-				- Button map
-
 		- Review all Popup's management
 			- Use IDs instead of trying to guess the index they used
 

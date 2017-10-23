@@ -16,6 +16,9 @@ GAME.Level.prototype.create = function() {
     this.helpersContainer = this.game.add.group();
     this.effectsContainer = this.game.add.group();
 
+    this.layers.fow = this.map.createLayer(4);
+    this.layers.fow.alpha = 0.8;
+
     this.createPanel();
 
     this.panel.updateUnit(this.unit);
@@ -65,6 +68,8 @@ GAME.Level.prototype.createUnits = function() {
     this.unit.isHungry.add(this.unitIsHungry, this);
     this.unit.offsetX = 72;
     this.game.camera.follow(this.unit);//, null, 96);
+
+    this.reveal(unitTile.x, unitTile.y);
 
     this.unitsContainer.addChild(this.unit);
     this.units.push(this.unit);
@@ -156,6 +161,27 @@ GAME.Level.prototype.getTiles = function(excludedType) {
 };
 
 /* Actions */
+
+GAME.Level.prototype.reveal = function(x1, y1) {
+    let originTile = this.map.getTile(x1, y1);
+    console.error(x1 + "x" + y1);
+    let emptyTile  = this.map.getTile(1, 1, 2);
+
+    let pf = new Pathfinding(this.getTiles(10), this.map.width, this.map.height);
+
+line = new Phaser.Line();
+
+
+    for (let y=-1; y<=1; y++) {
+        for (let x=-1; x<=1; x++) {
+            let nx = x + x1;
+            let ny = y + y1;
+            this.map.putTile(emptyTile, nx, ny, 4);
+          
+        }
+    }
+
+}
 
 GAME.Level.prototype.showInventory = function() {
     var popup = new PanelPopupEquipment(this.game);
@@ -366,6 +392,7 @@ GAME.Level.prototype.startTurn = function() {
                             sprite.events.onInputUp.add(function() {
                                 this.unit.fatigue(1);
                                 this.helpersContainer.removeAll(true);
+                                this.reveal(nx, ny);
                                 this.moveUnit(this.unit, nx, ny);
                             }, this);
                         }
@@ -415,6 +442,7 @@ GAME.Level.prototype.startTurn = function() {
                                         sprite.events.onInputUp.add(function() {
                                             this.unit.fatigue(5);
                                             this.helpersContainer.removeAll(true);
+                                            this.reveal(nx, ny);
                                             this.moveUnit(this.unit, nx, ny);
                                         }, this);
                                     }
@@ -455,7 +483,6 @@ GAME.Level.prototype.startTurn = function() {
 };
 
 GAME.Level.prototype.endTurn = function() {
-    console.log("endTurn");
     this.helpersContainer.removeAll(true);
     this.currentUnit.clearATB();
 
